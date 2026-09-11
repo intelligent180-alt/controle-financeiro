@@ -5805,3 +5805,29 @@ body {
         min-height: 0;
     }
 }
+
+.developer-credit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    margin: 1.5rem 0 0;
+    padding: 0.9rem 1rem;
+    color: #53706d;
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+
+.developer-credit strong {
+    color: #0b7f69;
+    font-weight: 800;
+}
+
+@media (max-width: 560px) {
+    .developer-credit {
+        flex-wrap: wrap;
+        line-height: 1.45;
+    }
+}

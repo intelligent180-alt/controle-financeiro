@@ -1,5 +1,9 @@
 # Historico de versoes
 
+## 1.0.1-piloto - 11/09/2026
+
+- Identificacao visual do desenvolvedor adicionada ao login e ao sistema.
+
 ## 1.0.0-piloto - 11/09/2026
 
 - Primeiro marco versionado do sistema financeiro.
