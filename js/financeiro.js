@@ -339,6 +339,7 @@ async function requireAuth() {
     state.user = data.user;
     applyProfileConfiguration();
     showProfileOnboardingIfNeeded();
+    showForcedPasswordChangeIfNeeded();
     return true;
 }
 
@@ -504,6 +505,13 @@ function showProfileOnboardingIfNeeded() {
     $('onboardingTaxControl').value = 'nao';
     updateOnboardingDescription();
     $('profileOnboarding').hidden = false;
+}
+
+function showForcedPasswordChangeIfNeeded() {
+    const overlay = $('forcePasswordOverlay');
+    if (!overlay || !state.user?.mustChangePassword) return;
+    overlay.hidden = false;
+    window.setTimeout(() => $('forceCurrentPassword')?.focus(), 50);
 }
 
 async function logout() {
@@ -2077,6 +2085,32 @@ $('onboardingForm').addEventListener('submit', async event => {
         await loadDashboard();
     } catch (error) {
         $('onboardingStatus').textContent = error.message || 'Nao foi possivel configurar o perfil.';
+    }
+});
+
+$('forcePasswordForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const status = $('forcePasswordStatus');
+    const newPassword = $('forceNewPassword').value;
+    if (newPassword !== $('forceConfirmPassword').value) {
+        status.textContent = 'A confirmacao da nova senha nao confere.';
+        return;
+    }
+    try {
+        status.textContent = 'Atualizando a senha...';
+        const data = await api('api/auth', {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'change_password',
+                currentPassword: $('forceCurrentPassword').value,
+                newPassword,
+            }),
+        });
+        state.user = data.user;
+        $('forcePasswordOverlay').hidden = true;
+        $('forcePasswordForm').reset();
+    } catch (error) {
+        status.textContent = error.message || 'Nao foi possivel atualizar a senha.';
     }
 });
 

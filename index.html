@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" href="css/financeiro.css?v=20260911-onboarding-standard">
+    <link rel="stylesheet" href="css/financeiro.css?v=20260911-onboarding-standard-v2">
     <link rel="stylesheet" href="css/professional-modules.css?v=20260911-professional-modules-v4">
 </head>
 <body class="app-page">
@@ -589,8 +589,29 @@
         </div>
     </div>
 
-    <script src="js/financeiro.js?v=20260911-professional-modules-v3"></script>
+    <div class="profile-onboarding force-password-overlay" id="forcePasswordOverlay" hidden>
+        <div class="profile-onboarding-card force-password-card" role="dialog" aria-modal="true" aria-labelledby="forcePasswordTitle">
+            <div class="onboarding-card-header">
+                <span class="onboarding-card-icon" aria-hidden="true"><svg><use href="#sf-key"></use></svg></span>
+                <div><span class="profile-onboarding-kicker">Seguranca da conta</span><h2 id="forcePasswordTitle">Crie uma nova senha</h2></div>
+                <span class="onboarding-step">01 <small>/ acesso</small></span>
+            </div>
+            <p class="onboarding-lead">A senha inicial do administrador e temporaria. Troque-a agora para proteger o sistema antes de iniciar a configuracao.</p>
+            <form id="forcePasswordForm">
+                <div class="onboarding-block">
+                    <div class="field"><label for="forceCurrentPassword">Senha atual</label><input id="forceCurrentPassword" type="password" autocomplete="current-password" required></div>
+                    <div class="field"><label for="forceNewPassword">Nova senha</label><input id="forceNewPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+                    <div class="field"><label for="forceConfirmPassword">Confirme a nova senha</label><input id="forceConfirmPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+                </div>
+                <div class="safe-note">Use pelo menos 8 caracteres e nao reutilize a senha em outros servicos.</div>
+                <p class="muted" id="forcePasswordStatus" role="status"></p>
+                <button class="primary-btn" type="submit">Salvar nova senha</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/financeiro.js?v=20260911-professional-modules-v4"></script>
     <script src="js/professional-modules.js?v=20260911-professional-modules-v3"></script>
-    <script src="js/pwa.js?v=20260911-pwa-v1"></script>
+    <script src="js/pwa.js?v=20260911-pwa-v2"></script>
 </body>
 </html>

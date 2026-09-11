@@ -34,6 +34,28 @@ try {
         sf_json(['ok' => true, 'message' => 'Sessao encerrada.']);
     }
 
+    if ($action === 'change_password') {
+        $user = sf_current_user($pdo);
+        if (!$user) {
+            sf_json(['ok' => false, 'message' => 'Sessao expirada. Faca login novamente.'], 401);
+        }
+        $currentPassword = (string)($input['currentPassword'] ?? '');
+        $newPassword = (string)($input['newPassword'] ?? '');
+        if (!password_verify($currentPassword, (string)$user['password_hash'])) {
+            sf_json(['ok' => false, 'message' => 'A senha atual nao confere.'], 422);
+        }
+        if (strlen($newPassword) < 8) {
+            sf_json(['ok' => false, 'message' => 'A nova senha deve ter pelo menos 8 caracteres.'], 422);
+        }
+        $stmt = $pdo->prepare('UPDATE users SET password_hash = :password_hash, must_change_password = 0, updated_at = :updated_at WHERE id = :id');
+        $stmt->execute([
+            ':password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+            ':updated_at' => sf_now(),
+            ':id' => (int)$user['id'],
+        ]);
+        sf_json(['ok' => true, 'message' => 'Senha atualizada com sucesso.', 'user' => sf_user_payload(sf_current_user($pdo))]);
+    }
+
     if ($action === 'register') {
         $name = sf_text($input['name'] ?? '', 160);
         $email = strtolower(sf_text($input['email'] ?? '', 190));
@@ -104,9 +126,10 @@ try {
     }
 
     $identityCpf = preg_replace('/\D+/', '', $identity);
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE lower(email) = :email OR cpf = :cpf LIMIT 1');
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE lower(email) = :email OR lower(username) = :username OR cpf = :cpf LIMIT 1');
     $stmt->execute([
         ':email' => $identity,
+        ':username' => $identity,
         ':cpf' => $identityCpf,
     ]);
     $user = $stmt->fetch();

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 const SF_APP_NAME = 'Sistema Financeiro';
 const SF_DB_FILE = __DIR__ . '/../data/financeiro.sqlite';
-const SF_DEFAULT_EMAIL = 'breno@financeiro.local';
-const SF_DEFAULT_CPF = '15416282681';
-const SF_DEFAULT_PASSWORD = '123';
+const SF_DEFAULT_USERNAME = 'admin';
+const SF_DEFAULT_EMAIL = 'admin@controle-financeiro.local';
+const SF_DEFAULT_CPF = '';
+const SF_DEFAULT_PASSWORD = 'admin';
 
 function sf_headers(): void
 {
@@ -89,10 +90,13 @@ function sf_schema(PDO $pdo): void
             name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             cpf TEXT DEFAULT '',
+            username TEXT DEFAULT '',
             profile_type TEXT NOT NULL DEFAULT 'clt',
             profile_completed INTEGER NOT NULL DEFAULT 1,
             profile_answers_json TEXT DEFAULT '{}',
             password_hash TEXT NOT NULL,
+            is_admin INTEGER NOT NULL DEFAULT 0,
+            must_change_password INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL
         )
@@ -109,6 +113,16 @@ function sf_schema(PDO $pdo): void
     if (!in_array('profile_answers_json', $userColumnNames, true)) {
         $pdo->exec("ALTER TABLE users ADD COLUMN profile_answers_json TEXT DEFAULT '{}'");
     }
+    if (!in_array('username', $userColumnNames, true)) {
+        $pdo->exec("ALTER TABLE users ADD COLUMN username TEXT DEFAULT ''");
+    }
+    if (!in_array('is_admin', $userColumnNames, true)) {
+        $pdo->exec('ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('must_change_password', $userColumnNames, true)) {
+        $pdo->exec('ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0');
+    }
+    $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users (username) WHERE username <> ''");
 
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS transactions (
@@ -501,13 +515,14 @@ function sf_default_user(PDO $pdo): void
 
     $now = sf_now();
     $stmt = $pdo->prepare("
-        INSERT INTO users (name, email, cpf, password_hash, created_at, updated_at)
-        VALUES (:name, :email, :cpf, :password_hash, :created_at, :updated_at)
+        INSERT INTO users (name, email, cpf, username, profile_type, profile_completed, profile_answers_json, password_hash, is_admin, must_change_password, created_at, updated_at)
+        VALUES (:name, :email, :cpf, :username, 'clt', 1, '{}', :password_hash, 1, 1, :created_at, :updated_at)
     ");
     $stmt->execute([
-        ':name' => 'Breno Anacleto',
+        ':name' => 'Administrador',
         ':email' => SF_DEFAULT_EMAIL,
         ':cpf' => SF_DEFAULT_CPF,
+        ':username' => SF_DEFAULT_USERNAME,
         ':password_hash' => password_hash(SF_DEFAULT_PASSWORD, PASSWORD_DEFAULT),
         ':created_at' => $now,
         ':updated_at' => $now,
@@ -523,6 +538,9 @@ function sf_user_payload(array $user): array
         'name' => (string)$user['name'],
         'email' => (string)$user['email'],
         'cpf' => (string)($user['cpf'] ?? ''),
+        'username' => (string)($user['username'] ?? ''),
+        'isAdmin' => (bool)($user['is_admin'] ?? false),
+        'mustChangePassword' => (bool)($user['must_change_password'] ?? false),
         'profileType' => $profileType,
         'profileCompleted' => (bool)($user['profile_completed'] ?? true),
         'profileAnswers' => json_decode((string)($user['profile_answers_json'] ?? '{}'), true) ?: [],

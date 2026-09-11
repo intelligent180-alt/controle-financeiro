@@ -5820,6 +5820,25 @@ body {
     text-align: center;
 }
 
+.force-password-card {
+    width: min(100%, 560px);
+}
+
+.force-password-card .onboarding-block {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.force-password-card .field label {
+    min-height: 0;
+}
+
+.force-password-card #forcePasswordStatus {
+    min-height: 1.2rem;
+    margin: 0;
+    text-align: center;
+}
+
 .developer-credit strong {
     color: #0b7f69;
     font-weight: 800;
