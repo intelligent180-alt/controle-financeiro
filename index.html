@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de controle financeiro | Painel</title>
+    <meta name="theme-color" content="#0b7f69">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="css/financeiro.css?v=20260911-onboarding-standard">
+    <link rel="stylesheet" href="css/professional-modules.css?v=20260911-professional-modules-v4">
+</head>
+<body class="app-page">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+        <symbol id="sf-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity=".72"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity=".72"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor"/></symbol>
+        <symbol id="sf-movements" viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="18" r="2" fill="currentColor"/></symbol>
+        <symbol id="sf-income" viewBox="0 0 24 24"><path d="M4 7.5h16v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 7.5V5h10v2.5M8 13h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></symbol>
+        <symbol id="sf-document" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h4M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M7 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-import" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h4M12 11v7M9.5 15.5 12 18l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-goals" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></symbol>
+        <symbol id="sf-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 7V5h8v2M3 12h18M10 12v2h4v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c.8-3.3 3.1-5 7-5s6.2 1.7 7 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-report" viewBox="0 0 24 24"><path d="M5 4h14v16H5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 16v-3M12 16V9M16 16v-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="sf-refresh" viewBox="0 0 24 24"><path d="M19 8a7.5 7.5 0 0 0-13.3-1.8L4 8.5M4 5v3.5h3.5M5 16a7.5 7.5 0 0 0 13.3 1.8l1.7-2.3M20 19v-3.5h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-logout" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-pix" viewBox="0 0 24 24"><path d="m8 5 4 4 4-4 3 3-4 4 4 4-3 3-4-4-4 4-3-3 4-4-4-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-debit" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h8M8 13h5M8 17h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cash" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M14.5 10.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.7s1.1 1.5 2.5 1.8 2.5.8 2.5 1.8-1.1 1.7-2.5 1.7-2.3-.5-2.8-1.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+        <symbol id="sf-chart" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M3 20h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-home" viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v9H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-agenda" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4M16 3v4M4 9h16M12 12v3l2 1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-users" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.8 19c.5-3 2.2-4.5 5.2-4.5s4.7 1.5 5.2 4.5M16 7.5a2.5 2.5 0 1 1 0 5M16 14.8c2.7.2 4.2 1.6 4.6 4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-wallet" viewBox="0 0 24 24"><path d="M4 6.5h14a2 2 0 0 1 2 2V19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 12h5v4h-5a2 2 0 0 1 0-4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="15.5" cy="14" r=".8" fill="currentColor"/></symbol>
+        <symbol id="sf-box" viewBox="0 0 24 24"><path d="m4 8 8-4 8 4-8 4zM4 8v8l8 4 8-4V8M12 12v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m7 6.5 8 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+        <symbol id="sf-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m15 15 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-settings" viewBox="0 0 24 24"><path d="M9.7 4.5 10.5 3h3l.8 1.5 1.8 1 .8-.2 1.5 1.5-.2.8 1 1.8 1.5.8v3l-1.5.8-1 1.8.2.8-1.5 1.5-.8-.2-1.8 1-.8 1.5h-3l-.8-1.5-1.8-1-.8.2-1.5-1.5.2-.8-1-1.8-1.5-.8v-3l1.5-.8 1-1.8-.2-.8L7.1 5.3l.8.2z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="12" cy="11.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+        <symbol id="sf-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m11 12 9-9M16 7l2 2M14 9l2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9a2.6 2.6 0 1 1 4.4 1.9c-1 .9-1.9 1.2-1.9 2.6M12 16.8v.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-pension" viewBox="0 0 24 24"><path d="M12 5v13M7 7h10M5 18h14M4 8l-3 6a3 3 0 0 0 6 0zM20 8l-3 6a3 3 0 0 0 6 0z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-cat-market" viewBox="0 0 24 24"><path d="M4 6h2l1.5 9h9.8l2-7H7M9 19.5h.01M17 19.5h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-cat-transport" viewBox="0 0 24 24"><path d="m5 16 1.5-6h11l1.5 6M4 16h16v3H4zM7 19v1M17 19v1M8 13h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-cat-health" viewBox="0 0 24 24"><path d="M12 20S4 15.2 4 9.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 8 2.3C20 15.2 12 20 12 20Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 11h6M12 8v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-food" viewBox="0 0 24 24"><circle cx="12" cy="13" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 4v5M6 4v5M10 4v5M8 9v3M17 4v8M17 12v8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-home" viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v9H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5M8 11h.01M16 11h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-clothes" viewBox="0 0 24 24"><path d="m9 5 3 2 3-2 4 3-2 4-2-1v9H9v-9l-2 1-2-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-cat-electronics" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 6h4M11 18h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-education" viewBox="0 0 24 24"><path d="M4 5h7a3 3 0 0 1 3 3v11a3 3 0 0 0-3-2H4zM20 5h-6a3 3 0 0 0-3 3v11a3 3 0 0 1 3-2h6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-cat-leisure" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></symbol>
+        <symbol id="sf-cat-subscriptions" viewBox="0 0 24 24"><path d="M6 10v4a6 6 0 0 0 12 0v-4M6 10a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2M18 10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2M9 19h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-pets" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2" fill="currentColor"/><circle cx="17" cy="8" r="2" fill="currentColor"/><circle cx="5" cy="13" r="2" fill="currentColor"/><circle cx="19" cy="13" r="2" fill="currentColor"/><path d="M12 11c-3 0-5 2.2-5 5a5 5 0 0 0 10 0c0-2.8-2-5-5-5Z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+        <symbol id="sf-cat-beauty" viewBox="0 0 24 24"><path d="m13 4 1.2 3.8L18 9l-3.8 1.2L13 14l-1.2-3.8L8 9l3.8-1.2zM18.5 15l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+        <symbol id="sf-cat-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M7 14h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-income" viewBox="0 0 24 24"><path d="M5 7h14v12H5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 7V5h8v2M12 10v6M14 12.5c-.4-.6-1-.9-2-.9-1.1 0-2 .5-2 1.3s.9 1.2 2 1.5 2 .7 2 1.5-.9 1.3-2 1.3-1.8-.4-2.2-1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+        <symbol id="sf-cat-other" viewBox="0 0 24 24"><path d="m4 8 8-4 8 4-8 4zM4 8v8l8 4 8-4V8M12 12v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    </svg>
+    <main class="finance-shell">
+        <header class="app-header">
+            <div class="brand-lockup">
+                <div class="brand-icon" aria-hidden="true">
+                    <svg width="38" height="38" viewBox="0 0 64 64" fill="none">
+                        <path d="M13 21h38a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5V26a5 5 0 0 1 5-5Z" fill="currentColor"/>
+                        <path d="M18 17h28l3 4H15l3-4Z" fill="currentColor"/>
+                        <circle cx="32" cy="36" r="7" fill="#fff"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Gestão financeira</h1>
+                    <p id="welcomeText">Controle pessoal com períodos do Dia 20 e do 5º dia útil.</p>
+                    <span class="profile-badge" id="profileBadge">CLT</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <label class="month-picker">Mes <input id="monthFilter" type="month"></label>
+                <button class="secondary-btn" type="button" onclick="loadDashboard()"><span class="button-icon" aria-hidden="true"><svg><use href="#sf-refresh"></use></svg></span>Atualizar</button>
+                <button class="secondary-btn report-btn" type="button" onclick="exportSummaryPdf()"><span class="button-icon" aria-hidden="true"><svg><use href="#sf-report"></use></svg></span>Resumo PDF</button>
+                <button class="danger-btn" type="button" onclick="resetFinancialData()"><span class="button-icon" aria-hidden="true"><svg><use href="#sf-trash"></use></svg></span>Zerar dados financeiros</button>
+                <button class="danger-btn" type="button" onclick="logout()"><span class="button-icon" aria-hidden="true"><svg><use href="#sf-logout"></use></svg></span>Sair</button>
+            </div>
+        </header>
+
+        <nav class="tabs" aria-label="Navegacao do financeiro">
+            <button class="tab-btn is-active" type="button" data-tab="dashboard"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-dashboard"></use></svg></span><span class="tab-label">Financeiro</span></button>
+            <button class="tab-btn" type="button" data-tab="movements" id="movementsTab"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-movements"></use></svg></span><span class="tab-label">Movimentos</span></button>
+            <button class="tab-btn" type="button" data-tab="income" id="incomeTab"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-income"></use></svg></span><span class="tab-label">Recebimentos</span></button>
+            <button class="tab-btn" type="button" data-tab="payslips" id="payslipsTab"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-document"></use></svg></span><span class="tab-label">Holerite</span></button>
+            <button class="tab-btn" type="button" data-tab="cards" id="cardsTab"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-card"></use></svg></span><span class="tab-label">Cartões</span></button>
+            <button class="tab-btn" type="button" data-tab="imports" id="importsTab"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-import"></use></svg></span><span class="tab-label">Importar extrato</span></button>
+            <button class="tab-btn" type="button" data-tab="goals" id="goalsTab"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-goals"></use></svg></span><span class="tab-label">Metas e IA</span></button>
+            <button class="tab-btn" type="button" data-tab="professional" id="professionalTab" hidden><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-briefcase"></use></svg></span><span class="tab-label">Profissional</span></button>
+            <button class="tab-btn" type="button" data-tab="profile"><span class="tab-icon" aria-hidden="true"><svg><use href="#sf-profile"></use></svg></span><span class="tab-label">Perfil</span></button>
+        </nav>
+
+        <section class="professional-nav-shell" id="professionalNav" hidden aria-label="Menu profissional">
+            <div class="professional-nav-heading">
+                <div><span class="eyebrow">Centro de operação</span><strong>Gestão profissional</strong><small id="professionalNavProfile">Perfil empresarial</small></div>
+                <span class="professional-nav-status"><span></span> Ativo</span>
+            </div>
+            <div class="professional-nav-groups">
+                <div class="professional-nav-group professional-nav-group--main">
+                    <span class="professional-nav-group-title">Operação</span>
+                    <button class="professional-nav-item" type="button" data-business-module="schedule"><span class="professional-nav-icon"><svg><use href="#sf-agenda"></use></svg></span><span>Agendamento</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="cash"><span class="professional-nav-icon"><svg><use href="#sf-wallet"></use></svg></span><span>Caixa</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="clients"><span class="professional-nav-icon"><svg><use href="#sf-users"></use></svg></span><span>Clientes</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="professional"><span class="professional-nav-icon"><svg><use href="#sf-briefcase"></use></svg></span><span>Profissional</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="products"><span class="professional-nav-icon"><svg><use href="#sf-box"></use></svg></span><span>Produtos e serviços</span></button>
+                </div>
+                <div class="professional-nav-group">
+                    <span class="professional-nav-group-title">Financeiro</span>
+                    <button class="professional-nav-item" type="button" data-business-module="transactions"><span class="professional-nav-icon"><svg><use href="#sf-movements"></use></svg></span><span>Lançamentos</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="wallets"><span class="professional-nav-icon"><svg><use href="#sf-wallet"></use></svg></span><span>Meus caixas</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="categories"><span class="professional-nav-icon"><svg><use href="#sf-cat-other"></use></svg></span><span>Categorias</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="accounts"><span class="professional-nav-icon"><svg><use href="#sf-card"></use></svg></span><span>Contas</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="payment-methods"><span class="professional-nav-icon"><svg><use href="#sf-debit"></use></svg></span><span>Formas de pagamento</span></button>
+                </div>
+                <div class="professional-nav-group">
+                    <span class="professional-nav-group-title">Análise e administração</span>
+                    <button class="professional-nav-item" type="button" data-business-module="purchases"><span class="professional-nav-icon"><svg><use href="#sf-cat-market"></use></svg></span><span>Compras</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="registrations"><span class="professional-nav-icon"><svg><use href="#sf-document"></use></svg></span><span>Cadastros gerais</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="consultation"><span class="professional-nav-icon"><svg><use href="#sf-search"></use></svg></span><span>Consulta</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="permissions"><span class="professional-nav-icon"><svg><use href="#sf-key"></use></svg></span><span>Permissões</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="settings"><span class="professional-nav-icon"><svg><use href="#sf-settings"></use></svg></span><span>Configurações</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="tax-documents"><span class="professional-nav-icon"><svg><use href="#sf-document"></use></svg></span><span>NFSe e NFC-e</span></button>
+                </div>
+                <div class="professional-nav-group professional-nav-group--compact">
+                    <span class="professional-nav-group-title">Suporte</span>
+                    <button class="professional-nav-item" type="button" data-business-module="help"><span class="professional-nav-icon"><svg><use href="#sf-help"></use></svg></span><span>Ajuda</span></button>
+                    <button class="professional-nav-item professional-nav-item--danger" type="button" onclick="logout()"><span class="professional-nav-icon"><svg><use href="#sf-logout"></use></svg></span><span>Sair</span></button>
+                    <button class="professional-nav-item" type="button" data-business-module="administrative"><span class="professional-nav-icon"><svg><use href="#sf-briefcase"></use></svg></span><span>Administrativo</span></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="content">
+            <section class="panel" id="panel-business-module" hidden>
+                <article class="soft-card pad business-module-card">
+                    <div class="business-module-heading">
+                        <span class="business-module-icon" id="businessModuleIcon" aria-hidden="true"><svg><use href="#sf-briefcase"></use></svg></span>
+                        <div><span class="eyebrow" id="businessModuleEyebrow">Gestão profissional</span><h2 id="businessModuleTitle">Central de operação</h2><p class="muted" id="businessModuleDescription">Selecione uma opção do menu profissional para abrir sua área de trabalho.</p></div>
+                        <span class="premium-chip">PREMIUM</span>
+                    </div>
+                    <div class="business-module-grid" id="businessModuleGrid"></div>
+                    <div class="business-module-footer"><span id="businessModuleStatus">Área pronta para sua operação.</span><button class="secondary-btn" type="button" onclick="activateTab('dashboard')">Voltar ao Financeiro</button></div>
+                </article>
+            </section>
+            <section class="panel is-active" id="panel-dashboard">
+                <div class="hero-grid">
+                    <article class="dashboard-balance-card">
+                        <div class="dashboard-hero-top">
+                            <div><span class="eyebrow">Resumo mensal</span><h2>Disponibilidade financeira</h2></div>
+                            <span class="dashboard-hero-month" id="heroMonth">Competencia atual</span>
+                        </div>
+                        <div class="dashboard-balance-main">
+                            <div><span class="dashboard-balance-label" id="availableBalanceLabel">Saldo disponivel do periodo</span><strong class="dashboard-balance-value" id="availableBalance">R$ 0,00</strong><span class="dashboard-balance-note" id="balanceNote">Registre entradas e saidas para projetar seu saldo.</span></div>
+                            <div class="dashboard-balance-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+                        </div>
+                        <div class="dashboard-health-row">
+                            <div class="dashboard-health-block"><div class="dashboard-health-title"><span>Semáforo dos gastos</span><strong id="spendingStatus">Sem dados</strong></div><div class="dashboard-traffic" id="spendingTraffic" aria-label="Indicador de saúde dos gastos"><span class="traffic-light green"></span><span class="traffic-light yellow"></span><span class="traffic-light red"></span></div><small id="spendingAdvice">Registre entradas e gastos para receber uma leitura.</small></div>
+                            <div class="dashboard-econometer"><div class="dashboard-health-title"><span>Economizômetro</span><strong id="econometerPercent">0% livre</strong></div><div class="econometer-track"><span id="econometerFill"></span></div><small id="econometerAdvice">Mostra quanto da receita ainda pode ser preservado.</small></div>
+                        </div>
+                        <div class="dashboard-hero-foot"><div><span>Recebi liquido</span><strong id="incomeTotal">R$ 0,00</strong><small>Salario + entradas</small></div><div><span>Gastei/usei</span><strong id="expenseTotal">R$ 0,00</strong><small>Saidas e cartao</small></div><div><span>Pendencias</span><strong id="pendingTotal">R$ 0,00</strong><small>Contas em aberto</small></div><div><span>Guardado</span><strong id="savedTotal">R$ 0,00</strong><small>Metas do mes</small></div></div>
+                    </article>
+                    <article class="soft-card pad dashboard-agenda-card">
+                        <div class="dashboard-agenda-heading"><span class="dashboard-agenda-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="7" y="9" width="34" height="32" rx="8" stroke="currentColor" stroke-width="3"/><path d="M14 6v8M34 6v8M8 18h32" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="30" r="7" fill="currentColor"/><path d="M28 26v4l3 2" stroke="#218f91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><span class="eyebrow">Planejamento mensal</span><h2>Agenda financeira</h2></div><span class="dashboard-agenda-status">ATIVA</span></div>
+                        <div class="dashboard-agenda-copy"><span class="dashboard-agenda-copy-label">Visão da competência</span><p class="muted" id="calendarNote">Acompanhe a competência do mês pelos dois ciclos de recebimento.</p></div>
+                        <div class="dashboard-agenda-periods" id="agendaPeriodOverview" aria-label="Ciclos da competência"><div class="agenda-period-card"><span class="agenda-period-icon" aria-hidden="true">20</span><div><small>1º ciclo</small><strong>Dia 20</strong><span>Adiantamento</span></div></div><span class="agenda-period-divider" aria-hidden="true">＋</span><div class="agenda-period-card"><span class="agenda-period-icon agenda-period-icon--blue" aria-hidden="true">5º</span><div><small>2º ciclo</small><strong>5º dia útil</strong><span>Recebimento principal</span></div></div></div>
+                        <div class="safe-note" id="agendaNote">O sistema separa as contas por competencia e por vencimento do periodo escolhido.</div>
+                        <div class="dashboard-agenda-line"><div><span>Periodo selecionado</span><strong id="agendaMonthLabel">Competencia atual</strong></div><div class="dashboard-agenda-line-mark"><span></span>Organizada</div></div>
+                    </article>
+                </div>
+
+                <article class="profile-context" id="profileContext" hidden>
+                    <strong id="profileContextTitle">Perfil CLT</strong>
+                    <span id="profileContextDescription">Salario, holerite, descontos e recebimentos por periodo.</span>
+                </article>
+
+                <article class="soft-card pad profile-dashboard" id="profileDashboard" hidden>
+                    <h2 id="profileDashboardTitle">Financeiro profissional</h2>
+                    <p class="muted" id="profileDashboardDescription"></p>
+                    <div class="profile-dashboard-metrics">
+                        <div><span id="profileMetricOneLabel">Receita recebida</span><strong id="profileMetricOne">R$ 0,00</strong></div>
+                        <div><span id="profileMetricTwoLabel">Despesas</span><strong id="profileMetricTwo">R$ 0,00</strong></div>
+                        <div><span id="profileMetricThreeLabel">Saldo operacional</span><strong id="profileMetricThree">R$ 0,00</strong></div>
+                    </div>
+                </article>
+
+                <article class="soft-card pad clt-spreadsheet-card" id="cltSpreadsheetCard" hidden>
+                    <div class="section-heading">
+                        <div><span class="eyebrow">Visao detalhada CLT</span><h2>Resumo financeiro em formato de planilha</h2><p class="muted">Gastos separados por forma de pagamento, com data, periodo, categoria ilustrada e parcelas.</p></div>
+                        <span class="spreadsheet-period" id="cltSpreadsheetPeriod">Competencia atual</span>
+                    </div>
+                    <div class="clt-spreadsheet-metrics">
+                        <div class="spreadsheet-metric card"><span class="spreadsheet-metric-icon" aria-hidden="true"><svg><use href="#sf-card"></use></svg></span><span>Cartão</span><strong id="cltCardExpenses">R$ 0,00</strong></div>
+                        <div class="spreadsheet-metric pix"><span class="spreadsheet-metric-icon" aria-hidden="true"><svg><use href="#sf-pix"></use></svg></span><span>Pix</span><strong id="cltPixExpenses">R$ 0,00</strong></div>
+                        <div class="spreadsheet-metric debit"><span class="spreadsheet-metric-icon" aria-hidden="true"><svg><use href="#sf-debit"></use></svg></span><span>Débito</span><strong id="cltDebitExpenses">R$ 0,00</strong></div>
+                        <div class="spreadsheet-metric cash"><span class="spreadsheet-metric-icon" aria-hidden="true"><svg><use href="#sf-cash"></use></svg></span><span>Dinheiro / outros</span><strong id="cltCashExpenses">R$ 0,00</strong></div>
+                    </div>
+                    <div class="clt-spreadsheet-scroll">
+                        <table class="clt-spreadsheet-table">
+                            <thead><tr><th>Data / hora</th><th>Estabelecimento e categoria</th><th>Forma</th><th>Cartao</th><th>Periodo</th><th>Parcela</th><th>Status</th><th class="amount-cell">Valor</th></tr></thead>
+                            <tbody id="cltSpreadsheetBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <div class="period-grid" id="periodCards"></div>
+
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Saldo e limite</h2>
+                        <p class="muted" id="balanceLimitChartNote">Comparativo do saldo do periodo com gastos e uso dos cartoes.</p>
+                        <div class="finance-bars" id="balanceLimitChart"></div>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Uso de limite por cartao</h2>
+                        <p class="muted">Acompanhe quanto ja foi usado e quanto ainda esta disponivel.</p>
+                        <div class="limit-chart" id="cardLimitChart"></div>
+                    </article>
+                </div>
+
+                <article class="soft-card pad dashboard-card-showcase">
+                    <h2>Meus cartoes</h2>
+                    <p class="muted">Imagem do cartao por banco emissor e bandeira, com o limite e os ultimos 4 digitos para reconhecer os lancamentos.</p>
+                    <div class="card-showcase-grid" id="dashboardCardVisuals"></div>
+                </article>
+
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Categorias de produtos</h2>
+                        <p class="muted">Cada categoria recebe um icone ilustrativo para facilitar a leitura dos gastos.</p>
+                        <div class="chart-bars" id="categoryChart"></div>
+                    </article>
+                    <article class="soft-card pad" id="periodCalendarCard">
+                        <h2>Calendario do ano</h2>
+                        <p class="muted">Vencimentos de referencia do ano atual.</p>
+                        <div class="calendar-grid" id="yearCalendar"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-professional">
+                <article class="soft-card pad professional-hero">
+                    <div>
+                        <span class="eyebrow">Controle profissional</span>
+                        <h2 id="professionalPanelTitle">Patrimonio, impostos e operacao</h2>
+                        <p class="muted" id="professionalPanelDescription">Centralize veiculos, casas, impostos e indicadores avancados da sua atividade.</p>
+                    </div>
+                    <span class="premium-chip">PREMIUM</span>
+                </article>
+
+                <div class="summary-grid professional-summary-grid">
+                    <article class="soft-card stat-card"><span class="stat-label">Patrimonio estimado</span><strong class="stat-value" id="professionalAssetValue">R$ 0,00</strong><span class="stat-note" id="professionalAssetCount">0 bens cadastrados</span></article>
+                    <article class="soft-card stat-card"><span class="stat-label">Custo mensal dos bens</span><strong class="stat-value" id="professionalMonthlyCost">R$ 0,00</strong><span class="stat-note">Financiamento, aluguel, manutencao e custos fixos</span></article>
+                    <article class="soft-card stat-card"><span class="stat-label">Impostos do mes</span><strong class="stat-value" id="professionalTaxTotal">R$ 0,00</strong><span class="stat-note" id="professionalTaxStatus">Nenhum imposto lancado</span></article>
+                    <article class="soft-card stat-card"><span class="stat-label">Resultado operacional</span><strong class="stat-value" id="professionalOperatingResult">R$ 0,00</strong><span class="stat-note">Receitas menos despesas e impostos</span></article>
+                </div>
+
+                <article class="soft-card pad impostometer-card">
+                    <div class="section-heading">
+                        <div><h2>Impostometro</h2><p class="muted">Acompanhe quanto foi reservado ou pago em impostos na competencia selecionada.</p></div>
+                        <span class="badge" id="professionalNextTaxBadge">Sem proximo vencimento</span>
+                    </div>
+                    <div class="impostometer-track"><span id="professionalTaxMeterFill"></span></div>
+                    <div class="impostometer-scale"><span id="professionalTaxPaidLabel">Pago R$ 0,00</span><strong id="professionalTaxMeterPercent">0% pago</strong><span id="professionalTaxPendingLabel">Pendente R$ 0,00</span></div>
+                    <div class="three-grid professional-mini-grid">
+                        <div><span>Impostos no ano</span><strong id="professionalYearTaxTotal">R$ 0,00</strong></div>
+                        <div><span>IPTU/IPVA anual informado</span><strong id="professionalAnnualAssetTax">R$ 0,00</strong></div>
+                        <div><span>Margem apos impostos</span><strong id="professionalTaxMargin">0%</strong></div>
+                    </div>
+                </article>
+
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Veiculos e imoveis</h2>
+                        <p class="muted">Cadastre carros, motos, casas, salas, terrenos e os custos recorrentes.</p>
+                        <form id="professionalAssetForm">
+                            <input id="professionalAssetId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="professionalAssetType">Tipo</label><select id="professionalAssetType" class="plain-select"><option value="vehicle">Veiculo</option><option value="property">Casa / imovel</option></select></div>
+                                <div class="field"><label for="professionalAssetName">Nome</label><input id="professionalAssetName" class="plain-input" placeholder="Ex.: Corolla da empresa ou Casa principal" required></div>
+                                <div class="field"><label for="professionalAssetIdentifier">Identificacao</label><input id="professionalAssetIdentifier" class="plain-input" placeholder="Placa, endereco curto ou contrato"></div>
+                                <div class="field"><label for="professionalAssetValue">Valor estimado</label><input id="professionalAssetValueInput" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="professionalAssetMonthlyCost">Custo mensal</label><input id="professionalAssetMonthlyCost" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="professionalAssetAnnualTax">IPVA/IPTU anual</label><input id="professionalAssetAnnualTax" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="professionalAssetDueDate">Proximo vencimento</label><input id="professionalAssetDueDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="professionalAssetStatus">Status</label><select id="professionalAssetStatus" class="plain-select"><option value="ativo">Ativo</option><option value="quitado">Quitado</option><option value="em_manutencao">Em manutencao</option><option value="inativo">Inativo</option></select></div>
+                            </div>
+                            <div class="form-grid single" style="margin-top:.8rem;"><div class="field"><label for="professionalAssetDescription">Observacoes</label><textarea id="professionalAssetDescription" class="plain-textarea" placeholder="Seguro, financiamento, aluguel, manutencoes e outras informacoes"></textarea></div></div>
+                            <div class="form-actions"><button class="primary-btn" type="submit">Salvar bem</button><button class="secondary-btn" type="button" onclick="clearProfessionalAssetForm()">Limpar</button></div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad"><h2>Bens cadastrados</h2><div class="list-stack professional-list" id="professionalAssetList"></div></article>
+                </div>
+
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Impostos e obrigacoes</h2>
+                        <p class="muted">Registre DAS, Simples, ISS, ICMS, IRPJ/CSLL, pro-labore, IPTU, IPVA e outros tributos. Os calculos legais devem ser conferidos com seu contador.</p>
+                        <form id="professionalTaxForm">
+                            <input id="professionalTaxId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="professionalTaxType">Imposto</label><select id="professionalTaxType" class="plain-select"><option value="das_mei">DAS / MEI</option><option value="simples_nacional">Simples Nacional</option><option value="iss">ISS</option><option value="icms">ICMS</option><option value="irpj_csll">IRPJ / CSLL</option><option value="inss_prolabore">INSS / pro-labore</option><option value="iptu">IPTU</option><option value="ipva">IPVA</option><option value="licenciamento">Licenciamento</option><option value="outro">Outro</option></select></div>
+                                <div class="field"><label for="professionalTaxCompetence">Competencia</label><input id="professionalTaxCompetence" class="plain-input" type="month" required></div>
+                                <div class="field"><label for="professionalTaxDueDate">Vencimento</label><input id="professionalTaxDueDate" class="plain-input" type="date" required></div>
+                                <div class="field"><label for="professionalTaxAmount">Valor</label><input id="professionalTaxAmount" class="plain-input" inputmode="decimal" placeholder="0,00" required></div>
+                                <div class="field"><label for="professionalTaxStatusInput">Status</label><select id="professionalTaxStatusInput" class="plain-select"><option value="pendente">Pendente</option><option value="programado">Programado</option><option value="pago">Pago</option></select></div>
+                                <div class="field"><label for="professionalTaxPaidDate">Data do pagamento</label><input id="professionalTaxPaidDate" class="plain-input" type="date"></div>
+                            </div>
+                            <div class="form-grid single" style="margin-top:.8rem;"><div class="field"><label for="professionalTaxNotes">Observacoes</label><textarea id="professionalTaxNotes" class="plain-textarea" placeholder="Guia, contador, numero do documento ou observacoes"></textarea></div></div>
+                            <div class="form-actions"><button class="primary-btn" type="submit">Salvar imposto</button><button class="secondary-btn" type="button" onclick="clearProfessionalTaxForm()">Limpar</button></div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad"><h2>Impostos da competencia</h2><div class="list-stack professional-list" id="professionalTaxList"></div></article>
+                </div>
+
+                <article class="soft-card pad premium-tools-card">
+                    <h2>Recursos avancados</h2>
+                    <p class="muted">Base preparada para ampliar o controle profissional sem misturar dados pessoais e empresariais.</p>
+                    <div class="three-grid premium-tool-grid">
+                        <div class="premium-tool"><span class="premium-tool-icon" aria-hidden="true"><svg><use href="#sf-chart"></use></svg></span><strong>DRE operacional</strong><span>Receita, despesas, impostos e resultado da competência.</span></div>
+                        <div class="premium-tool"><span class="premium-tool-icon" aria-hidden="true"><svg><use href="#sf-home"></use></svg></span><strong>Patrimônio consolidado</strong><span>Veículos, casas, custos fixos e valor estimado em um painel.</span></div>
+                        <div class="premium-tool"><span class="premium-tool-icon" aria-hidden="true"><svg><use href="#sf-agenda"></use></svg></span><strong>Agenda de obrigações</strong><span>Próximos vencimentos e status para reduzir esquecimentos.</span></div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel" id="panel-movements">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2 id="transactionPanelTitle">Novo lancamento</h2>
+                        <p class="muted" id="transactionPanelDescription">Registre entrada, saida, fatura ou compra no cartao.</p>
+                        <form id="transactionForm">
+                            <input id="transactionId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="transactionType">Tipo</label><select id="transactionType" class="plain-select"><option value="saida">Saida</option><option value="entrada">Entrada avulsa</option><option value="cartao_credito">Compra no cartao</option><option value="fatura_cartao">Fatura de cartao</option><option value="reserva">Reserva/meta</option></select></div>
+                                <div class="field" id="transactionPeriodField"><label for="transactionPeriod">Período</label><select id="transactionPeriod" class="plain-select"><option value="dia20">Dia 20</option><option value="quinto_util">5º dia útil</option></select></div>
+                                <div class="field"><label for="transactionDate">Data</label><input id="transactionDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="transactionTime">Hora</label><input id="transactionTime" class="plain-input" type="time"></div>
+                                <div class="field"><label for="transactionAmount">Valor</label><input id="transactionAmount" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="transactionDescription">Descricao</label><input id="transactionDescription" class="plain-input" placeholder="Ex.: Mercado, Pix, fatura Nubank"></div>
+                                <div class="field"><label for="transactionCategory">Categoria</label><input id="transactionCategory" class="plain-input" placeholder="Mercado, transporte, saude..."></div>
+                                <div class="field"><label for="transactionMethod">Metodo</label><select id="transactionMethod" class="plain-select"><option value="pix">Pix</option><option value="dinheiro">Dinheiro</option><option value="debito">Debito</option><option value="credito">Credito</option><option value="boleto">Boleto</option><option value="transferencia">Transferencia</option></select></div>
+                                <div class="field"><label for="transactionStatus">Status</label><select id="transactionStatus" class="plain-select"><option value="pago">Pago</option><option value="pendente">Pendente</option><option value="programado">Programado</option></select></div>
+                                <div class="field"><label for="transactionCard">Cartao</label><select id="transactionCard" class="plain-select"><option value="">Sem cartao</option></select></div>
+                            </div>
+                            <div class="installment-grid" id="transactionInstallmentFields">
+                                <div class="field"><label for="transactionInstallments">Quantidade de parcelas</label><input id="transactionInstallments" class="plain-input" type="number" min="1" max="60" value="1"></div>
+                                <div class="field"><label for="transactionInstallmentAmount">Valor por mes</label><input id="transactionInstallmentAmount" class="plain-input" type="text" readonly value="R$ 0,00"></div>
+                                <div class="installment-note" id="transactionInstallmentNote">Ao salvar, as parcelas futuras serao lancadas nos proximos meses.</div>
+                            </div>
+                            <div class="credit-schedule-note" id="transactionCreditRuleNote">Pix, débito e dinheiro entram no mês atual. No cartão, até o 5º dia útil fica no mês atual; depois dele, a primeira parcela ou o valor total vai para o mês seguinte.</div>
+                            <div class="form-grid single" style="margin-top:.8rem;">
+                                <div class="field"><label for="transactionNotes">Observacoes</label><textarea id="transactionNotes" class="plain-textarea" placeholder="Opcional"></textarea></div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar lancamento</button>
+                                <button class="secondary-btn" type="button" onclick="clearTransactionForm()">Limpar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2 id="transactionListTitle">Movimentos do mes</h2>
+                        <div class="list-stack" id="transactionList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-income">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2 id="incomePanelTitle">Registrar pagamento</h2>
+                        <p class="muted" id="incomePanelDescription">Recebimentos do Dia 20 entram sem descontos. No 5º dia útil, o sistema calcula INSS progressivo e vale-transporte de até 6%.</p>
+                        <form id="incomeForm">
+                            <div class="form-grid">
+                                <div class="field" id="incomePeriodField"><label for="incomePeriod">Período recebido</label><select id="incomePeriod" class="plain-select"><option value="dia20">Adiantamento Dia 20</option><option value="quinto_util">Pagamento do 5º dia útil</option></select></div>
+                                <div class="field"><label for="incomeDate">Data recebida</label><input id="incomeDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="grossSalary" id="grossSalaryLabel">Salario bruto</label><input id="grossSalary" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field" id="benefitsField"><label for="benefits">Beneficios</label><input id="benefits" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field" id="nightShiftField"><label for="nightShift">Adicional noturno</label><input id="nightShift" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field" id="hazardPayField"><label for="hazardPay">Periculosidade</label><input id="hazardPay" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field" id="extraIncomeField"><label for="extraIncome">Outros proventos</label><input id="extraIncome" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field" id="otherDiscountsField"><label for="otherDiscounts">Outros descontos</label><input id="otherDiscounts" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <label class="check-line" id="transportActiveField"><input id="transportActive" type="checkbox"> Descontar vale-transporte</label>
+                                <div class="field" id="transportManualField"><label for="transportManual">VT manual opcional</label><input id="transportManual" class="plain-input" inputmode="decimal" placeholder="auto 6%"></div>
+                            </div>
+                            <div class="form-grid single" style="margin-top:.8rem;">
+                                <div class="field"><label for="incomeNotes">Observacoes</label><textarea id="incomeNotes" class="plain-textarea"></textarea></div>
+                            </div>
+                            <div class="safe-note income-discount-note" id="incomeDiscountNote">Dia 20: descontos desativados automaticamente.</div>
+                            <div class="form-actions">
+                                <button class="primary-btn" id="incomeSubmitButton" type="submit">Calcular e salvar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2 id="incomeListTitle">Recebimentos registrados</h2>
+                        <div class="list-stack" id="incomeList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-payslips">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Adicionar holerite</h2>
+                        <p class="muted">Informe o valor liquido que realmente entrou na sua conta. Esse valor sera usado nos recebimentos e no Financeiro sem recalcular descontos.</p>
+                        <form id="payslipForm">
+                            <div class="form-grid">
+                                <div class="field" id="payslipPeriodField"><label for="payslipPeriod">Período recebido</label><select id="payslipPeriod" class="plain-select"><option value="dia20">Adiantamento Dia 20</option><option value="quinto_util">Pagamento do 5º dia útil</option></select></div>
+                                <div class="field"><label for="payslipMonth">Competencia</label><input id="payslipMonth" class="plain-input" type="month"></div>
+                                <div class="field"><label for="payslipDate">Data do pagamento</label><input id="payslipDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="payslipNet">Ganho liquido recebido</label><input id="payslipNet" class="plain-input payslip-net-input" inputmode="decimal" placeholder="0,00" required></div>
+                                <div class="field"><label for="payslipFile">Arquivo do holerite (opcional)</label><input id="payslipFile" class="plain-input" type="file" accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf"></div>
+                            </div>
+                            <div class="safe-note" style="margin-top:.8rem;">O arquivo fica identificado no registro apenas como referencia. O valor que entra no sistema e o ganho liquido informado acima.</div>
+                            <div class="form-grid single" style="margin-top:.8rem;">
+                                <div class="field"><label for="payslipNotes">Observacoes</label><textarea id="payslipNotes" class="plain-textarea" placeholder="Ex.: salario liquido, adiantamento ou bonus"></textarea></div>
+                            </div>
+                            <p class="muted" id="payslipStatus" role="status"></p>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar holerite</button>
+                                <button class="secondary-btn" type="button" onclick="clearPayslipForm()">Limpar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Holerites adicionados</h2>
+                        <p class="muted">Um registro por periodo e competencia. Ao salvar novamente, o valor daquele periodo e atualizado.</p>
+                        <div class="list-stack" id="payslipList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-cards">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Cartao seguro</h2>
+                        <p class="safe-note">Por seguranca, o sistema salva apenas apelido, instituicao emissora, tipo do cartao, bandeira, primeiros 4 e ultimos 4 digitos. CVV e numero completo nao sao armazenados.</p>
+                        <form id="cardForm">
+                            <input id="cardId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="cardNickname">Apelido</label><input id="cardNickname" class="plain-input" placeholder="Ex.: Nubank roxo"></div>
+                                <div class="field"><label for="cardHolderName">Nome do titular</label><input id="cardHolderName" class="plain-input" placeholder="Nome impresso no cartao"></div>
+                                <div class="field"><label for="cardInstitution">Instituicao emissora</label><input id="cardInstitution" class="plain-input" list="cardInstitutionOptions" placeholder="Santander, Caixa, Nubank..."><datalist id="cardInstitutionOptions"><option value="Santander"><option value="Caixa"><option value="Itaú"><option value="Bradesco"><option value="Nubank"><option value="Inter"><option value="Banco do Brasil"><option value="C6 Bank"><option value="Banco PAN"><option value="Sicredi"><option value="Safra"><option value="Mercado Pago"><option value="PagBank"><option value="PicPay"><option value="Will Bank"></datalist></div>
+                                <div class="field"><label for="cardProduct">Tipo / modelo do cartao</label><input id="cardProduct" class="plain-input" list="cardProductOptions" placeholder="Free, SX, Ourocard, Click..."><datalist id="cardProductOptions"><option value="Free"><option value="SX"><option value="Unique"><option value="Ourocard"><option value="Elo Mais"><option value="Elo Nanquim"><option value="Click"><option value="Uniclass"><option value="Like"><option value="Platinum"><option value="Gold"><option value="Black"><option value="Infinite"><option value="Nubank"><option value="Inter Gold"><option value="C6 Carbon"></datalist></div>
+                                <div class="field"><label for="cardBrand">Bandeira</label><input id="cardBrand" class="plain-input" list="cardBrandOptions" placeholder="Visa, Mastercard, Elo..."><datalist id="cardBrandOptions"><option value="Visa"><option value="Mastercard"><option value="Elo"><option value="Hipercard"><option value="American Express"><option value="JCB"><option value="Discover"><option value="UnionPay"><option value="Diners Club"></datalist></div>
+                                <div class="field"><label for="cardNumber">Numero completo ou ultimos 4</label><input id="cardNumber" class="plain-input" inputmode="numeric" autocomplete="off" maxlength="19" placeholder="Nao armazenamos o numero completo"></div>
+                                <div class="field"><label for="cardBin4">4 primeiros digitos (BIN)</label><input id="cardBin4" class="plain-input" inputmode="numeric" maxlength="4" placeholder="Ex.: 4389"></div>
+                                <div class="card-detection-note" id="cardDetectionNote">Digite o numero completo para identificar a bandeira pelos 4 primeiros digitos.</div>
+                                <div class="field"><label for="cardExpiry">Validade do cartao (MM/AA)</label><input id="cardExpiry" class="plain-input" inputmode="numeric" placeholder="Ex.: 12/29"></div>
+                                <div class="field"><label for="cardLimit">Limite</label><input id="cardLimit" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="cardClosing">Fechamento da fatura</label><input id="cardClosing" class="plain-input" type="number" min="1" max="31" value="1"></div>
+                                <div class="field"><label for="cardDue">Dia de vencimento da fatura</label><input id="cardDue" class="plain-input" type="number" min="1" max="31" value="10"></div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar cartao</button>
+                                <button class="secondary-btn" type="button" onclick="clearCardForm()">Limpar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Cartoes e faturas</h2>
+                        <p class="muted">Visual real do cartao com instituicao, bandeira, final e limite.</p>
+                        <div class="list-stack" id="cardList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-imports">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Importar extrato ou comprovante</h2>
+                        <p class="muted">Anexe PNG, JPG ou PDF. A leitura usa somente valores monetarios em reais, identifica o nome do estabelecimento, data, hora, metodo e os 4 ultimos digitos do cartao.</p>
+                        <div class="form-grid">
+                            <div class="field"><label for="importFile">Arquivo PNG, JPG ou PDF</label><input id="importFile" class="plain-input" type="file" accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf,.txt,.csv"></div>
+                            <div class="field" id="importPeriodField"><label for="importPeriod">Saldo sugerido</label><select id="importPeriod" class="plain-select"><option value="dia20">Saldo do Dia 20</option><option value="quinto_util">Saldo do 5º dia útil</option></select></div>
+                        </div>
+                        <p class="safe-note" id="importPeriodHelp">Para Pix e débito, confirme em cada movimento a data do pagamento e se o saldo usado veio do Dia 20 ou do 5º dia útil. Compras no cartão serão vinculadas automaticamente pelo final do cartão cadastrado.</p>
+                        <div class="form-grid single" style="margin-top:.8rem;">
+                            <div class="field"><label for="extractedText">Texto reconhecido</label><textarea id="extractedText" class="plain-textarea" placeholder="Cole aqui o texto do extrato se o OCR nao reconhecer."></textarea></div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="secondary-btn" type="button" onclick="readImportFile()">Ler arquivo</button>
+                            <button class="primary-btn" type="button" onclick="reviewImport()">Revisar movimentos</button>
+                            <button class="secondary-btn" type="button" onclick="bankStatus()">Status API banco</button>
+                        </div>
+                        <p class="muted" id="ocrStatus"></p>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Previa antes de salvar</h2>
+                        <div class="import-preview" id="importPreview"></div>
+                        <div class="form-actions">
+                            <button class="primary-btn" type="button" onclick="confirmImport()">Confirmar lancamentos</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-goals">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Meta financeira</h2>
+                        <form id="goalForm">
+                            <input id="goalId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="goalName">Meta</label><input id="goalName" class="plain-input" placeholder="Reserva, viagem, quitar cartao..."></div>
+                                <div class="field"><label for="goalTarget">Valor alvo</label><input id="goalTarget" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="goalSaved">Ja guardado</label><input id="goalSaved" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar meta</button>
+                                <button class="secondary-btn" type="button" onclick="clearGoalForm()">Limpar</button>
+                            </div>
+                        </form>
+                        <div class="list-stack" id="goalList" style="margin-top:1rem;"></div>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Assistente IA financeira</h2>
+                        <p class="muted">Analise local baseada nos seus lancamentos. Nao substitui contador, banco ou consultoria financeira profissional.</p>
+                        <div class="field"><label for="assistantQuestion">Pergunta</label><textarea id="assistantQuestion" class="plain-textarea" placeholder="Ex.: quanto posso guardar este mes? Devo pagar fatura primeiro?"></textarea></div>
+                        <div class="form-actions"><button class="primary-btn" type="button" onclick="askAssistant()">Gerar orientacao</button></div>
+                        <div class="assistant-box" id="assistantAnswer">Registre seus dados e clique em gerar orientacao.</div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-profile">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Meu perfil financeiro</h2>
+                        <p class="muted">O perfil foi identificado no primeiro acesso pelas suas respostas. Aqui voce pode atualizar apenas seus dados cadastrais; o tipo financeiro permanece definido pelo sistema.</p>
+                        <form id="profileForm">
+                            <div class="form-grid">
+                                <div class="field"><label for="profileName">Nome</label><input id="profileName" class="plain-input" required></div>
+                                <div class="field"><label for="profileEmail">E-mail</label><input id="profileEmail" class="plain-input" type="email" readonly></div>
+                                <div class="field"><label for="profileType">Perfil identificado</label><input id="profileType" class="plain-input" readonly></div>
+                            </div>
+                            <div class="safe-note profile-description" id="profileDescription">Salario, holerite, descontos e recebimentos por periodo.</div>
+                            <p class="muted" id="profileStatus" role="status"></p>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar perfil</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Recursos do seu perfil</h2>
+                        <p class="muted">Esta configuracao orienta o painel. Seus lancamentos, cartoes e metas continuam separados por conta.</p>
+                        <div class="profile-module-list" id="profileModules"></div>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <div class="profile-onboarding" id="profileOnboarding" hidden>
+        <div class="profile-onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+            <div class="onboarding-card-header">
+                <span class="onboarding-card-icon" aria-hidden="true"><svg><use href="#sf-profile"></use></svg></span>
+                <div><span class="profile-onboarding-kicker">Primeiro acesso</span><h2 id="onboardingTitle">Vamos configurar seu Financeiro</h2></div>
+                <span class="onboarding-step">01 <small>/ perfil</small></span>
+            </div>
+            <p class="onboarding-lead">Responda algumas perguntas para o sistema identificar seu perfil financeiro e preparar as ferramentas certas para a sua rotina.</p>
+            <form id="onboardingForm">
+                <div class="onboarding-block">
+                    <div class="onboarding-block-heading"><span>01</span><div><strong>Sobre sua atividade</strong><small>Conte como você trabalha ou administra sua renda.</small></div></div>
+                    <div class="form-grid">
+                        <div class="field"><label for="onboardingMainActivity">Qual é sua principal atividade?</label><select id="onboardingMainActivity" class="plain-select"><option value="clt">Trabalho com salário / holerite</option><option value="services">Presto serviços para clientes</option><option value="commerce">Vendo produtos ou mercadorias</option><option value="other">Outra atividade</option></select></div>
+                        <div class="field"><label for="onboardingReceivesSalary">Você recebe salário com holerite?</label><select id="onboardingReceivesSalary" class="plain-select"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
+                        <div class="field"><label for="onboardingHasCnpj">Você possui CNPJ ativo?</label><select id="onboardingHasCnpj" class="plain-select"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+                        <div class="field"><label for="onboardingSellsProducts">Você vende produtos ou mantém estoque?</label><select id="onboardingSellsProducts" class="plain-select"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+                    </div>
+                </div>
+                <div class="onboarding-block">
+                    <div class="onboarding-block-heading"><span>02</span><div><strong>Recursos que você precisa</strong><small>Ative uma visão sob medida para sua operação.</small></div></div>
+                    <div class="form-grid">
+                        <div class="field"><label for="onboardingHasVehicles">Precisa controlar veículos?</label><select id="onboardingHasVehicles" class="plain-select"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+                        <div class="field"><label for="onboardingHasProperties">Precisa controlar casas ou imóveis?</label><select id="onboardingHasProperties" class="plain-select"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+                        <div class="field"><label for="onboardingTaxControl">Precisa acompanhar impostos?</label><select id="onboardingTaxControl" class="plain-select"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+                    </div>
+                </div>
+                <div class="safe-note" id="onboardingProfileDescription">Responda as perguntas para o sistema identificar seu perfil automaticamente.</div>
+                <p class="muted" id="onboardingStatus" role="status"></p>
+                <button class="primary-btn" type="submit">Configurar meu Financeiro</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/financeiro.js?v=20260911-professional-modules-v3"></script>
+    <script src="js/professional-modules.js?v=20260911-professional-modules-v3"></script>
+    <script src="js/pwa.js?v=20260911-pwa-v1"></script>
+</body>
+</html>

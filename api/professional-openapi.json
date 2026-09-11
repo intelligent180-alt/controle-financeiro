@@ -1,0 +1,100 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sistema Financeiro - API Profissional",
+    "version": "1.0.0",
+    "description": "API interna autenticada para módulos de clientes, catálogo, caixa, agenda, fiscal, permissões e indicadores profissionais."
+  },
+  "servers": [
+    { "url": "/sistema%20financeiro" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "SF_AUTH",
+        "description": "Sessão criada pelo login do sistema."
+      }
+    },
+    "schemas": {
+      "ProfessionalSnapshot": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean" },
+          "profileType": { "type": "string", "enum": ["pj", "comerciante_pf", "comerciante_pj"] },
+          "analytics": { "$ref": "#/components/schemas/Analytics" },
+          "clients": { "type": "array", "items": { "type": "object" } },
+          "catalog": { "type": "array", "items": { "type": "object" } },
+          "cash": { "type": "array", "items": { "type": "object" } },
+          "schedule": { "type": "array", "items": { "type": "object" } },
+          "fiscalDocuments": { "type": "array", "items": { "type": "object" } },
+          "creditChecks": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "Analytics": {
+        "type": "object",
+        "properties": {
+          "month": { "type": "string", "example": "2026-09" },
+          "revenue": { "type": "number", "format": "double" },
+          "expenses": { "type": "number", "format": "double" },
+          "operationalResult": { "type": "number", "format": "double" },
+          "cashBalance": { "type": "number", "format": "double" },
+          "pendingTaxes": { "type": "number", "format": "double" },
+          "stockValue": { "type": "number", "format": "double" },
+          "monthlySeries": { "type": "array", "items": { "type": "object" } }
+        }
+      }
+    }
+  },
+  "security": [{ "sessionCookie": [] }],
+  "paths": {
+    "/api/professional.php": {
+      "get": {
+        "summary": "Consulta o snapshot profissional",
+        "parameters": [
+          { "name": "action", "in": "query", "schema": { "type": "string", "enum": ["snapshot", "search"], "default": "snapshot" } },
+          { "name": "month", "in": "query", "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" } },
+          { "name": "q", "in": "query", "description": "Texto da busca quando action=search", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Dados profissionais", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProfessionalSnapshot" } } } },
+          "401": { "description": "Sessão expirada" },
+          "403": { "description": "Perfil CLT não possui módulos profissionais" }
+        }
+      },
+      "post": {
+        "summary": "Salva, exclui ou atualiza um módulo profissional",
+        "description": "Use action=save com entity e record para CRUD. Use action=delete com entity e id. O servidor aplica validação, normalização e filtro por user_id.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["action"],
+                "properties": {
+                  "action": { "type": "string", "enum": ["save", "delete", "snapshot", "credit_precheck"] },
+                  "entity": { "type": "string", "enum": ["clients", "catalog", "cash", "categories", "payment_methods", "fiscal_documents", "schedule", "settings", "permissions"] },
+                  "id": { "type": "integer" },
+                  "record": { "type": "object" },
+                  "document": { "type": "string", "description": "CPF ou CNPJ; o servidor valida os dígitos antes de consultar" },
+                  "provider": { "type": "string", "enum": ["receita", "serasa", "combined"] },
+                  "clientId": { "type": "integer" },
+                  "purpose": { "type": "string", "enum": ["analise_comercial", "venda_prazo", "cadastro_cliente"] },
+                  "consent": { "type": "boolean" },
+                  "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Operação concluída" },
+          "401": { "description": "Sessão expirada" },
+          "422": { "description": "Dados inválidos" }
+        }
+      }
+    }
+  }
+}

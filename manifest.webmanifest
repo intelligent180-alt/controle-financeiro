@@ -1,0 +1,22 @@
+{
+  "name": "Controle Financeiro",
+  "short_name": "Financeiro",
+  "description": "Gestao financeira pessoal e profissional.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./login",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "theme_color": "#0b7f69",
+  "background_color": "#f4f8f7",
+  "icons": [
+    {
+      "src": "mobile/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

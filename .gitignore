@@ -1,0 +1,21 @@
+# Dados locais e credenciais nunca entram no controle de versoes
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+config/*.local.php
+config/*.env
+!config/*.example.env
+
+# Dependencias e artefatos de build
+node_modules/
+mobile/build/
+mobile/.gradle/
+mobile/.idea/
+*.apk
+*.aab
+
+# Arquivos temporarios do sistema/editor
+*.log
+*.tmp
+Thumbs.db
+.DS_Store

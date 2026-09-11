@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Financeiro | Login</title>
+    <meta name="theme-color" content="#0b7f69">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="css/financeiro.css">
+</head>
+<body class="auth-page">
+    <main class="auth-card">
+        <div class="auth-logo" aria-hidden="true">
+            <svg width="58" height="58" viewBox="0 0 64 64" fill="none">
+                <path d="M13 21h38a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5V26a5 5 0 0 1 5-5Z" fill="currentColor"/>
+                <path d="M18 17h28l3 4H15l3-4Z" fill="currentColor"/>
+                <circle cx="32" cy="36" r="7" fill="#fff"/>
+                <path d="M12 31a7 7 0 0 0 7-7H12v7ZM52 31a7 7 0 0 1-7-7h7v7ZM12 41a7 7 0 0 1 7 7H12v-7ZM52 41a7 7 0 0 0-7 7h7v-7Z" fill="#fff"/>
+            </svg>
+        </div>
+
+        <h1 class="auth-title">Sistema Financeiro</h1>
+        <p class="auth-subtitle">Gestao completa de financas</p>
+
+        <section class="auth-mode" id="loginMode">
+            <form class="auth-form" id="loginForm">
+                <div class="field">
+                    <label for="identity">E-mail ou CPF</label>
+                    <div class="input-shell">
+                        <span class="input-icon">&#9993;</span>
+                        <input id="identity" autocomplete="username" placeholder="breno@financeiro.local">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="password">Senha</label>
+                    <div class="input-shell">
+                        <span class="input-icon">&#9906;</span>
+                        <input id="password" type="password" autocomplete="current-password" placeholder="123">
+                    </div>
+                </div>
+                <button class="primary-btn" type="submit">&rarr; Entrar</button>
+                <button class="secondary-btn" type="button" id="showRegister">Criar novo acesso</button>
+            </form>
+            <div class="feedback" id="loginFeedback"></div>
+        </section>
+
+        <section class="auth-mode" id="registerMode" hidden>
+            <form class="auth-form" id="registerForm">
+                <div class="field">
+                    <label for="regName">Nome</label>
+                    <div class="input-shell"><span class="input-icon">&#9633;</span><input id="regName" placeholder="Seu nome"></div>
+                </div>
+                <div class="field">
+                    <label for="regEmail">E-mail</label>
+                    <div class="input-shell"><span class="input-icon">&#9993;</span><input id="regEmail" type="email" placeholder="seu@email.com"></div>
+                </div>
+                <div class="field">
+                    <label for="regCpf">CPF opcional</label>
+                    <div class="input-shell"><span class="input-icon">#</span><input id="regCpf" placeholder="Somente numeros"></div>
+                </div>
+                <div class="safe-note">No primeiro acesso, o sistema fará algumas perguntas e identificará automaticamente o perfil financeiro mais adequado.</div>
+                <div class="field">
+                    <label for="regPassword">Senha</label>
+                    <div class="input-shell"><span class="input-icon">&#9906;</span><input id="regPassword" type="password" placeholder="Minimo 3 caracteres"></div>
+                </div>
+                <button class="primary-btn" type="submit">Criar e entrar</button>
+                <button class="secondary-btn" type="button" id="showLogin">Voltar ao login</button>
+            </form>
+            <div class="feedback" id="registerFeedback"></div>
+        </section>
+
+        <div class="auth-footnote">
+            <span>&#9638; Pessoal</span>
+            <span>&bull;</span>
+            <span>&harr; Contas a pagar & receber</span>
+        </div>
+    </main>
+
+<script>
+async function apiAuth(payload) {
+    const response = await fetch('api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!response.ok || data.ok === false) {
+        throw new Error(data.message || 'Falha no acesso.');
+    }
+    return data;
+}
+
+fetch('api/auth')
+    .then(response => response.json())
+    .then(data => {
+        if (data.authenticated) window.location.href = 'index';
+    })
+    .catch(() => {});
+
+loginForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    loginFeedback.textContent = 'Entrando...';
+    try {
+        await apiAuth({ action: 'login', identity: identity.value.trim(), password: password.value });
+        window.location.href = 'index';
+    } catch (error) {
+        loginFeedback.textContent = error.message || 'Nao foi possivel entrar.';
+    }
+});
+
+registerForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    registerFeedback.textContent = 'Criando acesso...';
+    try {
+        await apiAuth({
+            action: 'register',
+            name: regName.value.trim(),
+            email: regEmail.value.trim(),
+            cpf: regCpf.value.trim(),
+            password: regPassword.value,
+        });
+        window.location.href = 'index';
+    } catch (error) {
+        registerFeedback.textContent = error.message || 'Nao foi possivel criar o acesso.';
+    }
+});
+
+showRegister.addEventListener('click', () => {
+    loginMode.hidden = true;
+    registerMode.hidden = false;
+});
+
+showLogin.addEventListener('click', () => {
+    registerMode.hidden = true;
+    loginMode.hidden = false;
+});
+</script>
+<script src="js/pwa.js?v=20260911-pwa-v1"></script>
+</body>
+</html>

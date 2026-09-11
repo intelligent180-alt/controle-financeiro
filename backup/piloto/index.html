@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Financeiro | Painel</title>
+    <link rel="stylesheet" href="css/financeiro.css?v=20260910-fullscreen">
+</head>
+<body class="app-page">
+    <main class="finance-shell">
+        <header class="app-header">
+            <div class="brand-lockup">
+                <div class="brand-icon" aria-hidden="true">
+                    <svg width="38" height="38" viewBox="0 0 64 64" fill="none">
+                        <path d="M13 21h38a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H13a5 5 0 0 1-5-5V26a5 5 0 0 1 5-5Z" fill="currentColor"/>
+                        <path d="M18 17h28l3 4H15l3-4Z" fill="currentColor"/>
+                        <circle cx="32" cy="36" r="7" fill="#fff"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Sistema Financeiro</h1>
+                    <p id="welcomeText">Controle pessoal com periodos dia 20 e 5o dia util.</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <label class="month-picker">Mes <input id="monthFilter" type="month"></label>
+                <button class="secondary-btn" type="button" onclick="loadDashboard()">Atualizar</button>
+                <button class="danger-btn" type="button" onclick="resetFinancialData()">Zerar dados financeiros</button>
+                <button class="danger-btn" type="button" onclick="logout()">Sair</button>
+            </div>
+        </header>
+
+        <nav class="tabs" aria-label="Navegacao do financeiro">
+            <button class="tab-btn is-active" type="button" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" type="button" data-tab="movements">Movimentos</button>
+            <button class="tab-btn" type="button" data-tab="income">Recebimentos</button>
+            <button class="tab-btn" type="button" data-tab="payslips">Holerite</button>
+            <button class="tab-btn" type="button" data-tab="cards">Cartoes</button>
+            <button class="tab-btn" type="button" data-tab="imports">Importar extrato</button>
+            <button class="tab-btn" type="button" data-tab="goals">Metas e IA</button>
+        </nav>
+
+        <section class="content">
+            <section class="panel is-active" id="panel-dashboard">
+                <div class="hero-grid">
+                    <article class="soft-card balance-card">
+                        <span class="stat-label">Saldo disponivel do periodo</span>
+                        <strong class="stat-value" id="availableBalance">R$ 0,00</strong>
+                        <span class="stat-note" id="balanceNote">Registre entradas e saidas para projetar seu saldo.</span>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Agenda financeira</h2>
+                        <p class="muted" id="calendarNote">Dia 20 e 5o dia util calculados pelo calendario do ano.</p>
+                        <div class="safe-note">O sistema separa as contas por competencia e por vencimento do periodo escolhido.</div>
+                    </article>
+                </div>
+
+                <div class="summary-grid">
+                    <article class="soft-card stat-card"><span class="stat-label">Recebi liquido</span><strong class="stat-value" id="incomeTotal">R$ 0,00</strong><span class="stat-note">Salario + entradas avulsas</span></article>
+                    <article class="soft-card stat-card"><span class="stat-label">Gastei/usei</span><strong class="stat-value" id="expenseTotal">R$ 0,00</strong><span class="stat-note">Saidas, cartao e faturas</span></article>
+                    <article class="soft-card stat-card"><span class="stat-label">Pendencias</span><strong class="stat-value" id="pendingTotal">R$ 0,00</strong><span class="stat-note">Contas ainda nao pagas</span></article>
+                    <article class="soft-card stat-card"><span class="stat-label">Guardado</span><strong class="stat-value" id="savedTotal">R$ 0,00</strong><span class="stat-note">Metas do mes</span></article>
+                </div>
+
+                <div class="period-grid" id="periodCards"></div>
+
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Saldo e limite</h2>
+                        <p class="muted" id="balanceLimitChartNote">Comparativo do saldo do periodo com gastos e uso dos cartoes.</p>
+                        <div class="finance-bars" id="balanceLimitChart"></div>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Uso de limite por cartao</h2>
+                        <p class="muted">Acompanhe quanto ja foi usado e quanto ainda esta disponivel.</p>
+                        <div class="limit-chart" id="cardLimitChart"></div>
+                    </article>
+                </div>
+
+                <article class="soft-card pad dashboard-card-showcase">
+                    <h2>Meus cartoes</h2>
+                    <p class="muted">Imagem do cartao por banco emissor e bandeira, com o limite e os ultimos 4 digitos para reconhecer os lancamentos.</p>
+                    <div class="card-showcase-grid" id="dashboardCardVisuals"></div>
+                </article>
+
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Categorias de produtos</h2>
+                        <p class="muted">Cada categoria recebe um icone ilustrativo para facilitar a leitura dos gastos.</p>
+                        <div class="chart-bars" id="categoryChart"></div>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Calendario do ano</h2>
+                        <p class="muted">Vencimentos de referencia do ano atual.</p>
+                        <div class="calendar-grid" id="yearCalendar"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-movements">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Novo lancamento</h2>
+                        <p class="muted">Registre entrada, saida, fatura ou compra no cartao.</p>
+                        <form id="transactionForm">
+                            <input id="transactionId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="transactionType">Tipo</label><select id="transactionType" class="plain-select"><option value="saida">Saida</option><option value="entrada">Entrada avulsa</option><option value="cartao_credito">Compra no cartao</option><option value="fatura_cartao">Fatura de cartao</option><option value="reserva">Reserva/meta</option></select></div>
+                                <div class="field"><label for="transactionPeriod">Periodo</label><select id="transactionPeriod" class="plain-select"><option value="dia20">Dia 20</option><option value="quinto_util">5o dia util</option></select></div>
+                                <div class="field"><label for="transactionDate">Data</label><input id="transactionDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="transactionTime">Hora</label><input id="transactionTime" class="plain-input" type="time"></div>
+                                <div class="field"><label for="transactionAmount">Valor</label><input id="transactionAmount" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="transactionDescription">Descricao</label><input id="transactionDescription" class="plain-input" placeholder="Ex.: Mercado, Pix, fatura Nubank"></div>
+                                <div class="field"><label for="transactionCategory">Categoria</label><input id="transactionCategory" class="plain-input" placeholder="Mercado, transporte, saude..."></div>
+                                <div class="field"><label for="transactionMethod">Metodo</label><select id="transactionMethod" class="plain-select"><option value="pix">Pix</option><option value="dinheiro">Dinheiro</option><option value="debito">Debito</option><option value="credito">Credito</option><option value="boleto">Boleto</option><option value="transferencia">Transferencia</option></select></div>
+                                <div class="field"><label for="transactionStatus">Status</label><select id="transactionStatus" class="plain-select"><option value="pago">Pago</option><option value="pendente">Pendente</option><option value="programado">Programado</option></select></div>
+                                <div class="field"><label for="transactionCard">Cartao</label><select id="transactionCard" class="plain-select"><option value="">Sem cartao</option></select></div>
+                            </div>
+                            <div class="installment-grid" id="transactionInstallmentFields">
+                                <div class="field"><label for="transactionInstallments">Quantidade de parcelas</label><input id="transactionInstallments" class="plain-input" type="number" min="1" max="60" value="1"></div>
+                                <div class="field"><label for="transactionInstallmentAmount">Valor por mes</label><input id="transactionInstallmentAmount" class="plain-input" type="text" readonly value="R$ 0,00"></div>
+                                <div class="installment-note" id="transactionInstallmentNote">Ao salvar, as parcelas futuras serao lancadas nos proximos meses.</div>
+                            </div>
+                            <div class="credit-schedule-note" id="transactionCreditRuleNote">Pix, debito e dinheiro entram no mes atual. No cartao, ate o 5o dia util fica no mes atual; depois dele, a primeira parcela ou o valor total vai para o mes seguinte.</div>
+                            <div class="form-grid single" style="margin-top:.8rem;">
+                                <div class="field"><label for="transactionNotes">Observacoes</label><textarea id="transactionNotes" class="plain-textarea" placeholder="Opcional"></textarea></div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar lancamento</button>
+                                <button class="secondary-btn" type="button" onclick="clearTransactionForm()">Limpar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Movimentos do mes</h2>
+                        <div class="list-stack" id="transactionList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-income">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Registrar pagamento</h2>
+                        <p class="muted">Recebimentos do dia 20 entram sem descontos. No 5o dia util, o sistema calcula INSS progressivo e vale-transporte de ate 6%.</p>
+                        <form id="incomeForm">
+                            <div class="form-grid">
+                                <div class="field"><label for="incomePeriod">Periodo recebido</label><select id="incomePeriod" class="plain-select"><option value="dia20">Adiantamento dia 20</option><option value="quinto_util">Pagamento 5o dia util</option></select></div>
+                                <div class="field"><label for="incomeDate">Data recebida</label><input id="incomeDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="grossSalary">Salario bruto</label><input id="grossSalary" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="benefits">Beneficios</label><input id="benefits" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="nightShift">Adicional noturno</label><input id="nightShift" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="hazardPay">Periculosidade</label><input id="hazardPay" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="extraIncome">Outros proventos</label><input id="extraIncome" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="otherDiscounts">Outros descontos</label><input id="otherDiscounts" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <label class="check-line"><input id="transportActive" type="checkbox"> Descontar vale-transporte</label>
+                                <div class="field"><label for="transportManual">VT manual opcional</label><input id="transportManual" class="plain-input" inputmode="decimal" placeholder="auto 6%"></div>
+                            </div>
+                            <div class="form-grid single" style="margin-top:.8rem;">
+                                <div class="field"><label for="incomeNotes">Observacoes</label><textarea id="incomeNotes" class="plain-textarea"></textarea></div>
+                            </div>
+                            <div class="safe-note income-discount-note" id="incomeDiscountNote">Dia 20: descontos desativados automaticamente.</div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Calcular e salvar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Recebimentos registrados</h2>
+                        <div class="list-stack" id="incomeList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-payslips">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Adicionar holerite</h2>
+                        <p class="muted">Informe o valor liquido que realmente entrou na sua conta. Esse valor sera usado nos recebimentos e no dashboard sem recalcular descontos.</p>
+                        <form id="payslipForm">
+                            <div class="form-grid">
+                                <div class="field"><label for="payslipPeriod">Periodo recebido</label><select id="payslipPeriod" class="plain-select"><option value="dia20">Adiantamento dia 20</option><option value="quinto_util">Pagamento 5o dia util</option></select></div>
+                                <div class="field"><label for="payslipMonth">Competencia</label><input id="payslipMonth" class="plain-input" type="month"></div>
+                                <div class="field"><label for="payslipDate">Data do pagamento</label><input id="payslipDate" class="plain-input" type="date"></div>
+                                <div class="field"><label for="payslipNet">Ganho liquido recebido</label><input id="payslipNet" class="plain-input payslip-net-input" inputmode="decimal" placeholder="0,00" required></div>
+                                <div class="field"><label for="payslipFile">Arquivo do holerite (opcional)</label><input id="payslipFile" class="plain-input" type="file" accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf"></div>
+                            </div>
+                            <div class="safe-note" style="margin-top:.8rem;">O arquivo fica identificado no registro apenas como referencia. O valor que entra no sistema e o ganho liquido informado acima.</div>
+                            <div class="form-grid single" style="margin-top:.8rem;">
+                                <div class="field"><label for="payslipNotes">Observacoes</label><textarea id="payslipNotes" class="plain-textarea" placeholder="Ex.: salario liquido, adiantamento ou bonus"></textarea></div>
+                            </div>
+                            <p class="muted" id="payslipStatus" role="status"></p>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar holerite</button>
+                                <button class="secondary-btn" type="button" onclick="clearPayslipForm()">Limpar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Holerites adicionados</h2>
+                        <p class="muted">Um registro por periodo e competencia. Ao salvar novamente, o valor daquele periodo e atualizado.</p>
+                        <div class="list-stack" id="payslipList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-cards">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Cartao seguro</h2>
+                        <p class="safe-note">Por seguranca, o sistema salva apenas apelido, instituicao emissora, tipo do cartao, bandeira, primeiros 4 e ultimos 4 digitos. CVV e numero completo nao sao armazenados.</p>
+                        <form id="cardForm">
+                            <input id="cardId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="cardNickname">Apelido</label><input id="cardNickname" class="plain-input" placeholder="Ex.: Nubank roxo"></div>
+                                <div class="field"><label for="cardHolderName">Nome do titular</label><input id="cardHolderName" class="plain-input" placeholder="Nome impresso no cartao"></div>
+                                <div class="field"><label for="cardInstitution">Instituicao emissora</label><input id="cardInstitution" class="plain-input" list="cardInstitutionOptions" placeholder="Santander, Caixa, Nubank..."><datalist id="cardInstitutionOptions"><option value="Santander"><option value="Caixa"><option value="Itaú"><option value="Bradesco"><option value="Nubank"><option value="Inter"><option value="Banco do Brasil"><option value="C6 Bank"><option value="Banco PAN"><option value="Sicredi"><option value="Safra"><option value="Mercado Pago"><option value="PagBank"><option value="PicPay"><option value="Will Bank"></datalist></div>
+                                <div class="field"><label for="cardProduct">Tipo / modelo do cartao</label><input id="cardProduct" class="plain-input" list="cardProductOptions" placeholder="Free, SX, Ourocard, Click..."><datalist id="cardProductOptions"><option value="Free"><option value="SX"><option value="Unique"><option value="Ourocard"><option value="Elo Mais"><option value="Elo Nanquim"><option value="Click"><option value="Uniclass"><option value="Like"><option value="Platinum"><option value="Gold"><option value="Black"><option value="Infinite"><option value="Nubank"><option value="Inter Gold"><option value="C6 Carbon"></datalist></div>
+                                <div class="field"><label for="cardBrand">Bandeira</label><input id="cardBrand" class="plain-input" list="cardBrandOptions" placeholder="Visa, Mastercard, Elo..."><datalist id="cardBrandOptions"><option value="Visa"><option value="Mastercard"><option value="Elo"><option value="Hipercard"><option value="American Express"><option value="JCB"><option value="Discover"><option value="UnionPay"><option value="Diners Club"></datalist></div>
+                                <div class="field"><label for="cardNumber">Numero completo ou ultimos 4</label><input id="cardNumber" class="plain-input" inputmode="numeric" autocomplete="off" maxlength="19" placeholder="Nao armazenamos o numero completo"></div>
+                                <div class="field"><label for="cardBin4">4 primeiros digitos (BIN)</label><input id="cardBin4" class="plain-input" inputmode="numeric" maxlength="4" placeholder="Ex.: 4389"></div>
+                                <div class="card-detection-note" id="cardDetectionNote">Digite o numero completo para identificar a bandeira pelos 4 primeiros digitos.</div>
+                                <div class="field"><label for="cardExpiry">Validade do cartao (MM/AA)</label><input id="cardExpiry" class="plain-input" inputmode="numeric" placeholder="Ex.: 12/29"></div>
+                                <div class="field"><label for="cardLimit">Limite</label><input id="cardLimit" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="cardClosing">Fechamento da fatura</label><input id="cardClosing" class="plain-input" type="number" min="1" max="31" value="1"></div>
+                                <div class="field"><label for="cardDue">Dia de vencimento da fatura</label><input id="cardDue" class="plain-input" type="number" min="1" max="31" value="10"></div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar cartao</button>
+                                <button class="secondary-btn" type="button" onclick="clearCardForm()">Limpar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Cartoes e faturas</h2>
+                        <p class="muted">Visual real do cartao com instituicao, bandeira, final e limite.</p>
+                        <div class="list-stack" id="cardList"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-imports">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Importar extrato ou comprovante</h2>
+                        <p class="muted">Anexe PNG, JPG ou PDF. A leitura usa somente valores monetarios em reais, identifica o nome do estabelecimento, data, hora, metodo e os 4 ultimos digitos do cartao.</p>
+                        <div class="form-grid">
+                            <div class="field"><label for="importFile">Arquivo PNG, JPG ou PDF</label><input id="importFile" class="plain-input" type="file" accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf,.txt,.csv"></div>
+                            <div class="field"><label for="importPeriod">Saldo sugerido</label><select id="importPeriod" class="plain-select"><option value="dia20">Saldo do Dia 20</option><option value="quinto_util">Saldo do 5o dia util</option></select></div>
+                        </div>
+                        <p class="safe-note">Para Pix e debito, confirme em cada movimento a data do pagamento e se o saldo usado veio do Dia 20 ou do 5o dia util. Compras no cartao serao vinculadas automaticamente pelo final do cartao cadastrado.</p>
+                        <div class="form-grid single" style="margin-top:.8rem;">
+                            <div class="field"><label for="extractedText">Texto reconhecido</label><textarea id="extractedText" class="plain-textarea" placeholder="Cole aqui o texto do extrato se o OCR nao reconhecer."></textarea></div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="secondary-btn" type="button" onclick="readImportFile()">Ler arquivo</button>
+                            <button class="primary-btn" type="button" onclick="reviewImport()">Revisar movimentos</button>
+                            <button class="secondary-btn" type="button" onclick="bankStatus()">Status API banco</button>
+                        </div>
+                        <p class="muted" id="ocrStatus"></p>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Previa antes de salvar</h2>
+                        <div class="import-preview" id="importPreview"></div>
+                        <div class="form-actions">
+                            <button class="primary-btn" type="button" onclick="confirmImport()">Confirmar lancamentos</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-goals">
+                <div class="editor-grid">
+                    <article class="soft-card pad">
+                        <h2>Meta financeira</h2>
+                        <form id="goalForm">
+                            <input id="goalId" type="hidden">
+                            <div class="form-grid">
+                                <div class="field"><label for="goalName">Meta</label><input id="goalName" class="plain-input" placeholder="Reserva, viagem, quitar cartao..."></div>
+                                <div class="field"><label for="goalTarget">Valor alvo</label><input id="goalTarget" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                                <div class="field"><label for="goalSaved">Ja guardado</label><input id="goalSaved" class="plain-input" inputmode="decimal" placeholder="0,00"></div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="primary-btn" type="submit">Salvar meta</button>
+                                <button class="secondary-btn" type="button" onclick="clearGoalForm()">Limpar</button>
+                            </div>
+                        </form>
+                        <div class="list-stack" id="goalList" style="margin-top:1rem;"></div>
+                    </article>
+                    <article class="soft-card pad">
+                        <h2>Assistente IA financeira</h2>
+                        <p class="muted">Analise local baseada nos seus lancamentos. Nao substitui contador, banco ou consultoria financeira profissional.</p>
+                        <div class="field"><label for="assistantQuestion">Pergunta</label><textarea id="assistantQuestion" class="plain-textarea" placeholder="Ex.: quanto posso guardar este mes? Devo pagar fatura primeiro?"></textarea></div>
+                        <div class="form-actions"><button class="primary-btn" type="button" onclick="askAssistant()">Gerar orientacao</button></div>
+                        <div class="assistant-box" id="assistantAnswer">Registre seus dados e clique em gerar orientacao.</div>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="js/financeiro.js?v=20260910-card-real-size"></script>
+</body>
+</html>
