@@ -77,8 +77,8 @@ function web_install_page(string $token, array $values, string $message = '', bo
     $confirmText = (string)($values['confirm_text'] ?? '');
     $dbHost = (string)($values['db_host'] ?? 'sql110.byethost32.com');
     $dbPort = (string)($values['db_port'] ?? '3306');
-    $dbName = (string)($values['db_name'] ?? '');
-    $dbUser = (string)($values['db_user'] ?? '');
+    $dbName = (string)($values['db_name'] ?? 'b32_42890833_1');
+    $dbUser = (string)($values['db_user'] ?? 'b32_42890833');
     ?>
     <!doctype html>
     <html lang="pt-BR">
