@@ -32,6 +32,31 @@ O arquivo `data/financeiro.sqlite` é apenas o banco local de desenvolvimento.
 Em produção, o driver deve ser `mysql`; não envie dumps SQL com dados pessoais
 para uma pasta pública.
 
+### Backup antes e depois da integração
+
+O arquivo `backup-system.php` cria um snapshot sem apagar ou alterar o banco
+original. Ele copia os arquivos do sistema, omite credenciais e salva o banco
+em uma subpasta com data e hora.
+
+Para guardar o sistema local que ainda usa SQLite:
+
+```text
+php install/backup-system.php --source=sqlite
+```
+
+Depois que o sistema estiver integrado ao MySQL, faça o backup do banco
+integrado pelo terminal disponível na hospedagem ou pelo phpMyAdmin. Se houver
+SSH/terminal no ambiente, o mesmo arquivo pode gerar um dump MySQL:
+
+```text
+php install/backup-system.php --source=mysql
+```
+
+O backup não inclui `config/config.local.php`, pois ele contém a senha do
+banco. Após uma restauração, recrie esse arquivo a partir de
+`config/config.example.php`. Não execute novamente o
+`install/patch-20260911.php`, pois ele é um patch antigo de reset.
+
 ### Instalador não destrutivo
 
 Depois de copiar os arquivos e configurar o MySQL, valide a hospedagem:

@@ -5,6 +5,7 @@ data/*.sqlite-wal
 data/*.sql
 mobile/financeiro.sql
 backup/pre-reset-*/
+backup/system-*/
 config/*.local.php
 config/*.env
 !config/*.example.env
