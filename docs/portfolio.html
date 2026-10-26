@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Portfólio — Controle Financeiro</title>
+    <style>
+        :root { --green:#087f69; --mint:#dff7ef; --ink:#173a3d; --muted:#5d7779; --line:#d7e9e5; }
+        * { box-sizing:border-box; }
+        body { margin:0; color:var(--ink); background:linear-gradient(135deg,#eef8f5,#f7fbfa); font-family:Inter,Segoe UI,Arial,sans-serif; line-height:1.55; }
+        .hero { padding:72px 7vw 58px; color:white; background:linear-gradient(135deg,#075c50,#16a58e 58%,#4dcbb0); }
+        .hero small { letter-spacing:.16em; font-weight:800; text-transform:uppercase; opacity:.8; }
+        h1 { max-width:850px; margin:12px 0 14px; font-size:clamp(2.2rem,5vw,4.6rem); line-height:1.02; }
+        .hero p { max-width:720px; margin:0; font-size:1.1rem; opacity:.92; }
+        main { width:min(1180px,92vw); margin:-28px auto 60px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+        .card { padding:22px; border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:0 14px 36px rgba(35,99,87,.08); }
+        .card h2,.card h3 { margin:0 0 9px; }
+        .card p { margin:0; color:var(--muted); }
+        .wide { margin-top:18px; }
+        .pill { display:inline-block; margin:4px 5px 0 0; padding:6px 10px; border-radius:999px; color:#08755f; background:var(--mint); font-size:.78rem; font-weight:800; }
+        pre { overflow:auto; padding:16px; border-radius:12px; color:#dff8f1; background:#102d32; }
+        code { font-family:Consolas,monospace; }
+        a { color:var(--green); font-weight:700; }
+        footer { padding:24px 7vw; color:#6c8582; text-align:center; }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <small>Portfólio técnico · Breno Cruz</small>
+        <h1>Controle Financeiro</h1>
+        <p>Plataforma web, mobile e API REST para transformar extratos, cartões,
+        parcelas e receitas em uma visão financeira organizada.</p>
+    </header>
+    <main>
+        <section class="grid">
+            <article class="card"><h3>Web full stack</h3><p>PHP, MySQL/SQLite, HTML, CSS e JavaScript com regras financeiras centralizadas.</p></article>
+            <article class="card"><h3>Mobile Android</h3><p>APK em Java e WebView, conectado ao mesmo domínio HTTPS sem configuração manual de URL.</p></article>
+            <article class="card"><h3>API REST</h3><p>API versionada, Bearer keys, escopos, rate limit, OpenAPI e Swagger UI.</p></article>
+            <article class="card"><h3>Automação financeira</h3><p>Importação de comprovantes, parcelas, cartões, períodos e contas futuras.</p></article>
+        </section>
+        <section class="card wide"><h2>Arquitetura</h2><pre><code>Web / APK / ERP externo
+          ↓ HTTPS
+       API PHP REST
+          ↓ PDO
+    MySQL ou SQLite</code></pre><p>O banco nunca fica exposto ao aplicativo. A API valida o usuário, aplica as regras e grava os dados.</p></section>
+        <section class="card wide"><h2>Tecnologias</h2><span class="pill">PHP</span><span class="pill">PDO</span><span class="pill">MySQL</span><span class="pill">SQLite</span><span class="pill">JavaScript</span><span class="pill">PWA</span><span class="pill">Android Java</span><span class="pill">Gradle</span><span class="pill">REST</span><span class="pill">OpenAPI</span><span class="pill">Swagger</span><span class="pill">HTTPS</span></section>
+        <section class="card wide"><h2>API REST pública</h2><p>Documentação visual: <a href="api.html">abrir Swagger UI</a>. Contrato: <code>../api/v1-openapi.json</code>.</p><pre><code>GET /api/v1.php/transactions?month=2026-11
+Authorization: Bearer sf_live_sua_chave</code></pre></section>
+        <section class="card wide"><h2>Open Finance</h2><p>A próxima camada conecta o Banco Inter por consentimento Open Finance através de um provedor autorizado, recebendo extratos por API/webhook e reaproveitando a mesma lógica de classificação e parcelas.</p></section>
+    </main>
+    <footer>Desenvolvido por BRENO CRUZ · Controle Financeiro</footer>
+</body>
+</html>

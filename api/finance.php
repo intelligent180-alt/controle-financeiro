@@ -1348,6 +1348,7 @@ function sf_save_import(PDO $pdo, int $userId, string $type, string $fileName, s
     return (int)$pdo->lastInsertId();
 }
 
+if (!defined('SF_FINANCE_LIBRARY_ONLY')) {
 try {
     $pdo = sf_db();
     $user = sf_require_user($pdo);
@@ -2005,4 +2006,5 @@ try {
         'ok' => false,
         'message' => 'Falha no financeiro: ' . $error->getMessage(),
     ], 500);
+}
 }

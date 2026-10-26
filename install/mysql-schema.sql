@@ -339,3 +339,24 @@ CREATE TABLE IF NOT EXISTS professional_credit_checks (
     CONSTRAINT fk_professional_credit_checks_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_professional_credit_checks_client FOREIGN KEY (client_id) REFERENCES professional_clients(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS developer_api_keys (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    key_prefix VARCHAR(32) NOT NULL,
+    key_hash CHAR(64) NOT NULL,
+    scopes VARCHAR(255) NOT NULL DEFAULT 'read',
+    active TINYINT(1) NOT NULL DEFAULT 1,
+    rate_limit INT NOT NULL DEFAULT 120,
+    last_used_at DATETIME NULL,
+    window_started_at DATETIME NULL,
+    window_requests INT NOT NULL DEFAULT 0,
+    expires_at DATETIME NULL,
+    created_at DATETIME NOT NULL,
+    revoked_at DATETIME NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_developer_api_key_hash (key_hash),
+    KEY idx_developer_api_keys_user (user_id, active),
+    CONSTRAINT fk_developer_api_keys_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

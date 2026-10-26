@@ -5969,3 +5969,23 @@ body {
         justify-self: start;
     }
 }
+
+/* Evita que o cartão invada a coluna do período na planilha CLT. */
+.clt-spreadsheet-table .spreadsheet-card-ref,
+.clt-spreadsheet-table .spreadsheet-period-ref,
+.clt-spreadsheet-table .spreadsheet-installment {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.25;
+}
+
+.clt-spreadsheet-table td:nth-child(4),
+.clt-spreadsheet-table td:nth-child(5),
+.clt-spreadsheet-table td:nth-child(6) {
+    overflow: hidden;
+}

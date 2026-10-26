@@ -29,6 +29,7 @@ mobile/.idea/
 *.aab
 
 # Arquivos temporarios do sistema/editor
+tmp/
 *.log
 *.tmp
 Thumbs.db

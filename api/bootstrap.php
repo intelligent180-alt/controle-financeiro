@@ -583,6 +583,27 @@ function sf_schema_sqlite(PDO $pdo): void
         )
     ");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_professional_credit_checks_user ON professional_credit_checks (user_id, requested_at DESC)");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS developer_api_keys (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            key_prefix TEXT NOT NULL,
+            key_hash TEXT NOT NULL UNIQUE,
+            scopes TEXT NOT NULL DEFAULT 'read',
+            active INTEGER NOT NULL DEFAULT 1,
+            rate_limit INTEGER NOT NULL DEFAULT 120,
+            last_used_at TEXT DEFAULT '',
+            window_started_at TEXT DEFAULT '',
+            window_requests INTEGER NOT NULL DEFAULT 0,
+            expires_at TEXT DEFAULT '',
+            created_at TEXT NOT NULL,
+            revoked_at TEXT DEFAULT '',
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    ");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_developer_api_keys_user ON developer_api_keys (user_id, active)");
 }
 
 function sf_schema_mysql(PDO $pdo): void

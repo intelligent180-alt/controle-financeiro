@@ -1,0 +1,107 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Controle Financeiro REST API",
+    "version": "1.0.0",
+    "description": "API pública autenticada para integrações com movimentações, cartões, recebimentos e dashboard. O MySQL nunca é exposto diretamente."
+  },
+  "servers": [
+    { "url": "https://financeiro.byethost32.com" },
+    { "url": "http://localhost/sistema financeiro" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerApiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "sf_live_<token>"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": false },
+          "error": { "type": "object" },
+          "requestId": { "type": "string" }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "required": ["description", "amount", "movementDate"],
+        "properties": {
+          "id": { "type": "integer" },
+          "description": { "type": "string", "example": "Compra de equipamento" },
+          "category": { "type": "string", "example": "Eletrônicos" },
+          "amount": { "type": "number", "format": "double", "example": 1200 },
+          "movementDate": { "type": "string", "format": "date" },
+          "paymentMethod": { "type": "string", "enum": ["credito", "pix", "debito", "dinheiro", "boleto"] },
+          "cardId": { "type": "integer", "nullable": true },
+          "cardLast4": { "type": "string", "minLength": 4, "maxLength": 4 },
+          "periodType": { "type": "string", "enum": ["dia20", "quinto_util"] },
+          "installmentCount": { "type": "integer", "minimum": 1, "maximum": 60 },
+          "installmentNumber": { "type": "integer", "minimum": 1 },
+          "status": { "type": "string", "enum": ["pendente", "pago", "programado"] }
+        }
+      },
+      "Card": {
+        "type": "object",
+        "required": ["nickname", "last4"],
+        "properties": {
+          "nickname": { "type": "string" },
+          "institution": { "type": "string" },
+          "brand": { "type": "string" },
+          "bin4": { "type": "string", "maxLength": 4 },
+          "last4": { "type": "string", "minLength": 4, "maxLength": 4 },
+          "cardholderName": { "type": "string" },
+          "limitTotal": { "type": "number", "format": "double" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/v1.php/health": {
+      "get": { "summary": "Verifica a API", "responses": { "200": { "description": "Online" } } }
+    },
+    "/api/v1.php/me": {
+      "get": { "security": [{ "bearerApiKey": [] }], "summary": "Usuário dono da chave", "responses": { "200": { "description": "Usuário" }, "401": { "description": "Chave inválida" } } }
+    },
+    "/api/v1.php/dashboard": {
+      "get": {
+        "security": [{ "bearerApiKey": [] }],
+        "summary": "Dashboard por competência",
+        "parameters": [{ "name": "month", "in": "query", "required": true, "schema": { "type": "string", "pattern": "^\\d{4}-(0[1-9]|1[0-2])$" } }],
+        "responses": { "200": { "description": "Dashboard" } }
+      }
+    },
+    "/api/v1.php/transactions": {
+      "get": {
+        "security": [{ "bearerApiKey": [] }],
+        "summary": "Lista movimentações",
+        "parameters": [
+          { "name": "month", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": { "200": { "description": "Movimentações" } }
+      },
+      "post": {
+        "security": [{ "bearerApiKey": [] }],
+        "summary": "Cria movimentação e parcelas",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Transaction" } } } },
+        "responses": { "201": { "description": "Criada" }, "422": { "description": "Dados inválidos" } }
+      }
+    },
+    "/api/v1.php/transactions/{id}": {
+      "get": { "security": [{ "bearerApiKey": [] }], "summary": "Consulta movimentação", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Movimentação" }, "404": { "description": "Não encontrada" } } },
+      "delete": { "security": [{ "bearerApiKey": [] }], "summary": "Exclui movimentação", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Excluída" } } }
+    },
+    "/api/v1.php/cards": {
+      "get": { "security": [{ "bearerApiKey": [] }], "summary": "Lista cartões", "responses": { "200": { "description": "Cartões" } } },
+      "post": { "security": [{ "bearerApiKey": [] }], "summary": "Cadastra cartão sem número completo", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Card" } } } }, "responses": { "201": { "description": "Criado" } } }
+    },
+    "/api/v1.php/incomes": {
+      "get": { "security": [{ "bearerApiKey": [] }], "summary": "Lista recebimentos", "parameters": [{ "name": "month", "in": "query", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Recebimentos" } } }
+    }
+  }
+}

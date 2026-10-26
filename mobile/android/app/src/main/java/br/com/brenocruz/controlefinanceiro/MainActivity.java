@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
     private static final String PREFS = "controle_financeiro_mobile";
     private static final String SERVER_URL = "server_url";
     private static final String SERVER_CONFIG_VERSION = "server_config_version";
-    private static final int CURRENT_SERVER_CONFIG_VERSION = 2;
+    private static final int CURRENT_SERVER_CONFIG_VERSION = 3;
     private static final int FILE_CHOOSER_REQUEST = 4101;
     private static final int GREEN = Color.rgb(11, 127, 105);
     private static final int TEXT = Color.rgb(23, 63, 70);
@@ -37,20 +37,19 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
-        String savedUrl = preferences.getString(SERVER_URL, "");
         String defaultUrl = BuildConfig.DEFAULT_SERVER_URL.trim();
-        int savedConfigVersion = preferences.getInt(SERVER_CONFIG_VERSION, 0);
-        if (isHttpUrl(defaultUrl) && (savedUrl.isEmpty() || savedConfigVersion < CURRENT_SERVER_CONFIG_VERSION)) {
-            preferences.edit()
-                    .putString(SERVER_URL, normalizeUrl(defaultUrl))
-                    .putInt(SERVER_CONFIG_VERSION, CURRENT_SERVER_CONFIG_VERSION)
-                    .apply();
-            savedUrl = normalizeUrl(defaultUrl);
-        }
-        if (savedUrl.isEmpty()) {
+        if (!isHttpUrl(defaultUrl)) {
             showConfiguration();
         } else {
-            showWeb(savedUrl);
+            // Em produção, o APK usa sempre o domínio oficial compilado.
+            // Isso evita pedir URL ao usuário e impede que um endereço antigo
+            // ou localhost interrompa a conexão com a hospedagem.
+            String officialUrl = normalizeUrl(defaultUrl);
+            preferences.edit()
+                    .putString(SERVER_URL, officialUrl)
+                    .putInt(SERVER_CONFIG_VERSION, CURRENT_SERVER_CONFIG_VERSION)
+                    .apply();
+            showWeb(officialUrl);
         }
     }
 

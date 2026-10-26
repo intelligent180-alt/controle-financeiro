@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Controle Financeiro — API REST</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+    <style>
+        :root { color-scheme: light; }
+        body { margin: 0; background: #eef5f3; font-family: Inter, Arial, sans-serif; }
+        .api-topbar { padding: 22px 28px; color: #fff; background: linear-gradient(135deg, #087f69, #1db49d); box-shadow: 0 8px 24px rgba(8, 127, 105, .18); }
+        .api-topbar h1 { margin: 0 0 6px; font-size: 1.35rem; }
+        .api-topbar p { margin: 0; opacity: .9; }
+        .api-note { max-width: 1280px; margin: 18px auto 0; padding: 0 18px; color: #3c5d5b; font-size: .9rem; }
+        .swagger-ui { max-width: 1280px; margin: 0 auto; padding: 0 18px 36px; }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui .information-container { padding-top: 18px; }
+        .swagger-ui .scheme-container { border-radius: 12px; box-shadow: 0 8px 22px rgba(22, 83, 75, .08); }
+        .swagger-ui .opblock { border-radius: 10px; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <header class="api-topbar">
+        <h1>Controle Financeiro — API REST</h1>
+        <p>Documentação visual, autenticação e testes das integrações externas.</p>
+    </header>
+    <p class="api-note"><strong>Segurança:</strong> clique em <strong>Authorize</strong> e informe a chave Bearer. Nunca coloque a chave em código JavaScript público.</p>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+        window.onload = function () {
+            window.ui = SwaggerUIBundle({
+                url: '../api/v1-openapi.json',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                displayRequestDuration: true,
+                persistAuthorization: false,
+                tryItOutEnabled: true,
+                filter: true,
+                presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+                layout: 'BaseLayout'
+            });
+        };
+    </script>
+</body>
+</html>
