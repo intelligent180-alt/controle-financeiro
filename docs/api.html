@@ -4,43 +4,139 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Controle Financeiro — API REST</title>
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
     <style>
-        :root { color-scheme: light; }
-        body { margin: 0; background: #eef5f3; font-family: Inter, Arial, sans-serif; }
-        .api-topbar { padding: 22px 28px; color: #fff; background: linear-gradient(135deg, #087f69, #1db49d); box-shadow: 0 8px 24px rgba(8, 127, 105, .18); }
-        .api-topbar h1 { margin: 0 0 6px; font-size: 1.35rem; }
-        .api-topbar p { margin: 0; opacity: .9; }
-        .api-note { max-width: 1280px; margin: 18px auto 0; padding: 0 18px; color: #3c5d5b; font-size: .9rem; }
-        .swagger-ui { max-width: 1280px; margin: 0 auto; padding: 0 18px 36px; }
-        .swagger-ui .topbar { display: none; }
-        .swagger-ui .information-container { padding-top: 18px; }
-        .swagger-ui .scheme-container { border-radius: 12px; box-shadow: 0 8px 22px rgba(22, 83, 75, .08); }
-        .swagger-ui .opblock { border-radius: 10px; overflow: hidden; }
+        :root { color-scheme: light; --ink:#15343d; --muted:#668089; --line:#d8e8e7; --brand:#087f69; --brand-2:#14b89a; --soft:#eef8f6; --danger:#c94b59; }
+        * { box-sizing: border-box; }
+        body { margin:0; background:#f4f8f8; color:var(--ink); font:15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        a { color:var(--brand); font-weight:700; text-decoration:none; }
+        .hero { padding:34px 22px 28px; color:#fff; background:linear-gradient(135deg,#073d43,#087f69 58%,#19b99d); box-shadow:0 12px 30px rgba(8,127,105,.18); }
+        .hero-inner,.shell { width:min(1180px,calc(100% - 32px)); margin:auto; }
+        .eyebrow { color:#86f0d7; font-size:.75rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+        h1,h2,h3,p { margin-top:0; }
+        h1 { margin:6px 0 8px; font-size:clamp(1.5rem,3vw,2.3rem); letter-spacing:-.03em; }
+        .hero p { margin:0; max-width:760px; color:#d9fffa; }
+        .hero-nav { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+        .hero-nav a { padding:9px 13px; border:1px solid rgba(255,255,255,.3); border-radius:999px; color:#fff; background:rgba(255,255,255,.1); }
+        .shell { padding:24px 0 48px; }
+        .grid { display:grid; grid-template-columns:1.4fr .8fr; gap:16px; }
+        .panel,.operation { border:1px solid var(--line); border-radius:18px; background:#fff; box-shadow:0 10px 28px rgba(30,80,78,.06); }
+        .panel { padding:20px; }
+        .panel h2 { margin-bottom:4px; font-size:1.05rem; }
+        .panel p { color:var(--muted); font-size:.9rem; }
+        .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        label { display:block; color:#42626a; font-size:.78rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+        input,textarea { width:100%; margin-top:6px; border:1px solid #c8dedd; border-radius:11px; color:var(--ink); background:#fbfefe; font:inherit; padding:11px 12px; outline:none; }
+        input:focus,textarea:focus { border-color:var(--brand-2); box-shadow:0 0 0 3px rgba(20,184,154,.14); }
+        textarea { min-height:130px; resize:vertical; font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; }
+        .button { border:0; border-radius:10px; padding:10px 15px; color:#fff; background:linear-gradient(135deg,var(--brand),var(--brand-2)); cursor:pointer; font:800 .88rem inherit; box-shadow:0 8px 18px rgba(8,127,105,.2); }
+        .button.secondary { color:var(--brand); border:1px solid #b9d9d4; background:#effaf7; box-shadow:none; }
+        .button:disabled { cursor:wait; opacity:.6; }
+        .helper { margin-top:12px; color:var(--muted); font-size:.82rem; }
+        .health { display:flex; height:100%; flex-direction:column; justify-content:space-between; }
+        .status { display:flex; align-items:center; gap:9px; margin-top:20px; padding:12px; border-radius:12px; color:#40616a; background:var(--soft); font-size:.86rem; }
+        .dot { width:10px; height:10px; flex:0 0 10px; border-radius:50%; background:#a2b8ba; }
+        .dot.ok { background:#12ad7f; box-shadow:0 0 0 5px rgba(18,173,127,.14); }
+        .dot.bad { background:var(--danger); box-shadow:0 0 0 5px rgba(201,75,89,.13); }
+        .section-head { display:flex; align-items:end; justify-content:space-between; gap:16px; margin:28px 0 12px; }
+        .section-head h2 { margin:0; font-size:1.45rem; }
+        .section-head span { color:var(--muted); font-size:.85rem; }
+        #operations { display:grid; gap:14px; }
+        .operation { overflow:hidden; }
+        .operation-head { display:flex; align-items:center; gap:10px; padding:16px 18px; border-bottom:1px solid var(--line); background:linear-gradient(90deg,#fff,#f5fbfa); }
+        .method { min-width:62px; padding:5px 8px; border-radius:7px; color:#fff; font-size:.72rem; font-weight:900; letter-spacing:.04em; text-align:center; }
+        .method.get { background:#087f69; }.method.post { background:#3978c7; }.method.delete { background:#c94b59; }
+        .path { color:#173e46; font:700 .9rem ui-monospace,SFMono-Regular,Consolas,monospace; overflow-wrap:anywhere; }
+        .summary { margin-left:auto; color:var(--muted); font-size:.85rem; text-align:right; }
+        .operation-body { padding:16px 18px; }
+        .operation-form { display:grid; gap:12px; }
+        .param-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+        .response { display:none; margin-top:14px; overflow:auto; max-height:330px; padding:14px; border:1px solid #d4e2e1; border-radius:11px; background:#10252b; color:#e1fffa; font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre-wrap; }
+        .response.visible { display:block; }
+        .operation-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+        .auth-note { color:#8a5a26; font-size:.82rem; }
+        .empty,.error { padding:18px; border:1px dashed #b9d9d4; border-radius:13px; color:var(--muted); background:#fbfefe; }
+        .error { color:var(--danger); border-color:#edb7bd; background:#fff8f8; }
+        footer { margin-top:28px; color:var(--muted); text-align:center; font-size:.82rem; }
+        @media (max-width:760px) { .grid { grid-template-columns:1fr; } .field-row { grid-template-columns:1fr; } .operation-head { align-items:flex-start; flex-wrap:wrap; } .summary { width:100%; margin-left:0; text-align:left; } }
     </style>
 </head>
 <body>
-    <header class="api-topbar">
-        <h1>Controle Financeiro — API REST</h1>
-        <p>Documentação visual, autenticação e testes das integrações externas.</p>
+    <header class="hero">
+        <div class="hero-inner">
+            <div class="eyebrow">Documentação visual · v1</div>
+            <h1>Controle Financeiro — API REST</h1>
+            <p>Teste a API pelo navegador, consulte a saúde do serviço e experimente os endpoints autenticados sem instalar ferramentas externas.</p>
+            <nav class="hero-nav"><a href="./portfolio.html">← Portfólio</a><a href="https://github.com/intelligent180-alt/controle-financeiro">Código no GitHub</a></nav>
+        </div>
     </header>
-    <p class="api-note"><strong>Segurança:</strong> clique em <strong>Authorize</strong> e informe a chave Bearer. Nunca coloque a chave em código JavaScript público.</p>
-    <div id="swagger-ui"></div>
-    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+
+    <main class="shell">
+        <section class="grid">
+            <div class="panel">
+                <h2>Conexão da API</h2>
+                <p>Informe o endereço da API e, quando necessário, sua chave Bearer. A chave fica somente nesta aba e não é salva.</p>
+                <div class="field-row">
+                    <label>Base URL<input id="baseUrl" value="https://financeiro.byethost32.com" spellcheck="false"></label>
+                    <label>Bearer key<input id="apiKey" type="password" placeholder="sf_live_..." autocomplete="off" spellcheck="false"></label>
+                </div>
+                <div class="helper">A API valida o usuário, aplica as regras do sistema e acessa o banco pelo servidor. Nunca coloque a chave em código público.</div>
+            </div>
+            <div class="panel health">
+                <div><h2>Status do serviço</h2><p>Endpoint público para verificar se a API está online.</p></div>
+                <div><button class="button" id="healthButton" type="button">Testar health</button><div class="status"><span class="dot" id="healthDot"></span><span id="healthText">Aguardando teste</span></div></div>
+            </div>
+        </section>
+
+        <div class="section-head"><h2>Endpoints disponíveis</h2><span id="operationCount">Carregando contrato OpenAPI…</span></div>
+        <section id="operations"><div class="empty">Carregando a documentação da API…</div></section>
+        <footer>Controle Financeiro · API REST pública · Documentação mantida por BRENO CRUZ</footer>
+    </main>
+
     <script>
-        window.onload = function () {
-            window.ui = SwaggerUIBundle({
-                url: '../api/v1-openapi.json',
-                dom_id: '#swagger-ui',
-                deepLinking: true,
-                displayRequestDuration: true,
-                persistAuthorization: false,
-                tryItOutEnabled: true,
-                filter: true,
-                presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
-                layout: 'BaseLayout'
-            });
-        };
+        const methods = ['get', 'post', 'put', 'patch', 'delete'];
+        const $ = (selector, root = document) => root.querySelector(selector);
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+        const currentMonth = () => { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}`; };
+        const exampleBody = path => path.includes('/cards') ? JSON.stringify({ nickname:'Cartão de teste', institution:'Instituição', brand:'Visa', last4:'0000', cardholderName:'Nome do titular', limitTotal:1000 }, null, 2) : JSON.stringify({ description:'Lançamento de teste via API', amount:10, movementDate:new Date().toISOString().slice(0,10), category:'Teste', paymentMethod:'pix', status:'pendente' }, null, 2);
+
+        function renderOperation(path, method, operation) {
+            const parameters = operation.parameters || [];
+            const protectedOperation = Array.isArray(operation.security) && operation.security.length > 0;
+            const card = document.createElement('article');
+            card.className = 'operation'; card.dataset.path = path; card.dataset.method = method;
+            const fields = parameters.map(param => `<label>${escapeHtml(param.name)} · ${param.in}<input data-param-name="${escapeHtml(param.name)}" data-param-in="${param.in}" value="${param.name === 'month' ? currentMonth() : ''}" placeholder="${param.name === 'month' ? 'AAAA-MM' : ''}" spellcheck="false"></label>`).join('');
+            card.innerHTML = `<div class="operation-head"><span class="method ${method}">${method.toUpperCase()}</span><span class="path">${escapeHtml(path)}</span><span class="summary">${escapeHtml(operation.summary || 'Operação')}</span></div><div class="operation-body"><div class="operation-form">${fields ? `<div class="param-grid">${fields}</div>` : ''}${operation.requestBody ? `<label>JSON do corpo<textarea data-request-body spellcheck="false">${escapeHtml(exampleBody(path))}</textarea></label>` : ''}<div class="operation-actions"><button class="button" type="button" data-run>Testar endpoint</button>${protectedOperation ? '<span class="auth-note">🔒 Requer Bearer key</span>' : '<span class="helper">Endpoint público</span>'}</div><pre class="response" data-response></pre></div></div>`;
+            $('[data-run]', card).addEventListener('click', () => runOperation(card));
+            return card;
+        }
+
+        async function runOperation(card) {
+            const button = $('[data-run]', card); const output = $('[data-response]', card); let path = card.dataset.path; const query = new URLSearchParams();
+            card.querySelectorAll('[data-param-name]').forEach(input => { const value = input.value.trim(); if (input.dataset.paramIn === 'path') path = path.replace(`{${input.dataset.paramName}}`, encodeURIComponent(value)); else if (value) query.set(input.dataset.paramName, value); });
+            const base = $('#baseUrl').value.trim().replace(/\/+$/, ''); const url = `${base}${path}${query.toString() ? `?${query}` : ''}`; const headers = { Accept:'application/json' }; const key = $('#apiKey').value.trim();
+            if (key) headers.Authorization = key.toLowerCase().startsWith('bearer ') ? key : `Bearer ${key}`;
+            const options = { method:card.dataset.method.toUpperCase(), headers };
+            if (!['GET', 'HEAD'].includes(options.method)) { try { options.body = JSON.stringify(JSON.parse($('[data-request-body]', card).value)); headers['Content-Type'] = 'application/json'; } catch (error) { output.textContent = `JSON inválido: ${error.message}`; output.classList.add('visible'); return; } }
+            button.disabled = true; button.textContent = 'Consultando…'; output.classList.add('visible'); output.textContent = `→ ${options.method} ${url}`;
+            try { const response = await fetch(url, options); const text = await response.text(); let body; try { body = JSON.stringify(JSON.parse(text), null, 2); } catch (_) { body = text; } output.textContent = `HTTP ${response.status} ${response.statusText}\n\n${body || '(resposta vazia)'}`; }
+            catch (error) { output.textContent = `Falha de conexão ou CORS:\n${error.message}`; }
+            finally { button.disabled = false; button.textContent = 'Testar endpoint'; }
+        }
+
+        async function testHealth() {
+            const button = $('#healthButton'); const text = $('#healthText'); const dot = $('#healthDot'); const url = `${$('#baseUrl').value.trim().replace(/\/+$/, '')}/api/v1.php/health`;
+            button.disabled = true; button.textContent = 'Testando…'; text.textContent = 'Conectando…'; dot.className = 'dot';
+            try { const response = await fetch(url); const body = await response.json(); if (!response.ok || body.ok === false) throw new Error(`HTTP ${response.status}`); dot.className = 'dot ok'; text.textContent = `Online · ${body.data?.database || 'API respondeu'}`; }
+            catch (error) { dot.className = 'dot bad'; text.textContent = `Falha: ${error.message}`; }
+            finally { button.disabled = false; button.textContent = 'Testar health'; }
+        }
+
+        async function loadSpec() {
+            const container = $('#operations');
+            try { const response = await fetch('../api/v1-openapi.json', { cache:'no-store' }); if (!response.ok) throw new Error(`Contrato OpenAPI retornou HTTP ${response.status}`); const spec = await response.json(); if (spec.servers?.[0]?.url) $('#baseUrl').value = spec.servers[0].url; container.innerHTML = ''; let count = 0; Object.entries(spec.paths || {}).forEach(([path, pathItem]) => methods.forEach(method => { if (pathItem[method]) { container.appendChild(renderOperation(path, method, pathItem[method])); count++; } })); $('#operationCount').textContent = `${count} operações · contrato OpenAPI 3.0.3`; }
+            catch (error) { container.innerHTML = `<div class="error">Não foi possível carregar o contrato OpenAPI: ${escapeHtml(error.message)}</div>`; $('#operationCount').textContent = 'Falha ao carregar'; }
+        }
+        $('#healthButton').addEventListener('click', testHealth); loadSpec();
     </script>
 </body>
 </html>
