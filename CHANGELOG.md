@@ -1,5 +1,11 @@
 # Historico de versoes
 
+## 1.0.7-piloto - 26/10/2026
+
+- APK passa a abrir automaticamente a hospedagem oficial sem pedir URL ao usuario.
+- Selecao de arquivos PNG, JPG e PDF habilitada no WebView para comprovantes e holerites.
+- APK compilado com versao 1.0.7 e acesso seguro somente por HTTPS.
+
 ## 1.0.6-piloto - 26/10/2026
 
 - Instalador não destrutivo para preparar hospedagem, banco MySQL e vínculo do domínio com o APK.

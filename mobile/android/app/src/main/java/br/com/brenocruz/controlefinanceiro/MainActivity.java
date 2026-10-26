@@ -1,6 +1,7 @@
 package br.com.brenocruz.controlefinanceiro;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,11 +23,15 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     private static final String PREFS = "controle_financeiro_mobile";
     private static final String SERVER_URL = "server_url";
+    private static final String SERVER_CONFIG_VERSION = "server_config_version";
+    private static final int CURRENT_SERVER_CONFIG_VERSION = 2;
+    private static final int FILE_CHOOSER_REQUEST = 4101;
     private static final int GREEN = Color.rgb(11, 127, 105);
     private static final int TEXT = Color.rgb(23, 63, 70);
     private static final int MUTED = Color.rgb(83, 112, 109);
     private WebView webView;
     private SharedPreferences preferences;
+    private ValueCallback<Uri[]> fileChooserCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +39,12 @@ public class MainActivity extends Activity {
         preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
         String savedUrl = preferences.getString(SERVER_URL, "");
         String defaultUrl = BuildConfig.DEFAULT_SERVER_URL.trim();
-        if (savedUrl.isEmpty() && isHttpUrl(defaultUrl)) {
-            preferences.edit().putString(SERVER_URL, normalizeUrl(defaultUrl)).apply();
+        int savedConfigVersion = preferences.getInt(SERVER_CONFIG_VERSION, 0);
+        if (isHttpUrl(defaultUrl) && (savedUrl.isEmpty() || savedConfigVersion < CURRENT_SERVER_CONFIG_VERSION)) {
+            preferences.edit()
+                    .putString(SERVER_URL, normalizeUrl(defaultUrl))
+                    .putInt(SERVER_CONFIG_VERSION, CURRENT_SERVER_CONFIG_VERSION)
+                    .apply();
             savedUrl = normalizeUrl(defaultUrl);
         }
         if (savedUrl.isEmpty()) {
@@ -82,9 +92,13 @@ public class MainActivity extends Activity {
         bar.addView(title, new LinearLayout.LayoutParams(0, dp(48), 1));
         if (showSettings) {
             Button settings = new Button(this);
-            settings.setText("Configurar");
+            settings.setText("Recarregar");
             settings.setTextColor(GREEN);
-            settings.setOnClickListener(view -> showConfiguration());
+            settings.setOnClickListener(view -> {
+                if (webView != null) {
+                    webView.reload();
+                }
+            });
             bar.addView(settings, new LinearLayout.LayoutParams(dp(112), dp(48)));
         }
         return bar;
@@ -162,7 +176,35 @@ public class MainActivity extends Activity {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, false);
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(
+                    WebView view,
+                    ValueCallback<Uri[]> callback,
+                    FileChooserParams params
+            ) {
+                if (fileChooserCallback != null) {
+                    fileChooserCallback.onReceiveValue(null);
+                }
+                fileChooserCallback = callback;
+                Intent chooserIntent;
+                try {
+                    chooserIntent = params.createIntent();
+                } catch (Exception error) {
+                    chooserIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    chooserIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    chooserIntent.setType("*/*");
+                }
+                try {
+                    startActivityForResult(chooserIntent, FILE_CHOOSER_REQUEST);
+                } catch (Exception error) {
+                    fileChooserCallback = null;
+                    callback.onReceiveValue(null);
+                    Toast.makeText(MainActivity.this, "Nao foi possivel abrir os arquivos do aparelho.", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -172,6 +214,28 @@ public class MainActivity extends Activity {
         layout.addView(webView, new LinearLayout.LayoutParams(-1, 0, 1));
         setContentView(layout);
         webView.loadUrl(url);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FILE_CHOOSER_REQUEST && fileChooserCallback != null) {
+            Uri[] result = null;
+            if (resultCode == RESULT_OK && data != null) {
+                Uri single = data.getData();
+                if (single != null) {
+                    result = new Uri[]{single};
+                } else if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    result = new Uri[count];
+                    for (int index = 0; index < count; index++) {
+                        result[index] = data.getClipData().getItemAt(index).getUri();
+                    }
+                }
+            }
+            fileChooserCallback.onReceiveValue(result);
+            fileChooserCallback = null;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
