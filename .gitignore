@@ -14,6 +14,8 @@ config/*.env
 install/install.token
 install/install.lock
 install/config.local.php.before-install-*
+install/backup.token
+install/backup.lock
 
 # Dependencias e artefatos de build
 node_modules/

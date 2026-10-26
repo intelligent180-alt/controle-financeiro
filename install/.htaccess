@@ -3,3 +3,7 @@ Require all denied
 <Files "web-install.php">
     Require all granted
 </Files>
+
+<Files "web-backup-user.php">
+    Require all granted
+</Files>
