@@ -31,3 +31,22 @@ publique o comando com a senha em histórico compartilhado.
 O arquivo `data/financeiro.sqlite` é apenas o banco local de desenvolvimento.
 Em produção, o driver deve ser `mysql`; não envie dumps SQL com dados pessoais
 para uma pasta pública.
+
+### Instalador não destrutivo
+
+Depois de copiar os arquivos e configurar o MySQL, valide a hospedagem:
+
+```text
+php install/hosting-install.php --check
+```
+
+Para criar somente as tabelas que ainda não existirem e preservar os dados já
+existentes:
+
+```text
+php install/hosting-install.php --prepare --base-url=https://seu-dominio.example/
+```
+
+O instalador funciona apenas pelo terminal e nunca executa `DROP`, `DELETE`,
+`TRUNCATE` ou reset de usuários. Sem SSH, abra `api/health.php` pelo domínio;
+o backend também prepara tabelas ausentes de forma aditiva no primeiro acesso.

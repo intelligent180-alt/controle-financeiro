@@ -1,5 +1,10 @@
 # Historico de versoes
 
+## 1.0.6-piloto - 26/10/2026
+
+- Instalador não destrutivo para preparar hospedagem, banco MySQL e vínculo do domínio com o APK.
+- Validação de arquivos web/mobile e preservação explícita de usuários e movimentações existentes.
+
 ## 1.0.5-piloto - 26/10/2026
 
 - APIs do frontend passaram a usar os arquivos `.php` diretamente, sem depender de `mod_rewrite`.
