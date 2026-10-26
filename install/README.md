@@ -109,6 +109,15 @@ php install/hosting-install.php --migrate \
 
 Somente depois confira os registros desse ID e acrescente a confirmação.
 
+Para criar uma cópia local filtrada somente do usuário escolhido, use o mesmo
+ID no backup:
+
+```text
+php install/backup-user.php \
+  --source=backup/ftp-20261026-120000/pre-reset-financeiro.sqlite \
+  --cpf=SEU_CPF --user-id=2
+```
+
 ### Instalador não destrutivo
 
 Depois de copiar os arquivos e configurar o MySQL, valide a hospedagem:

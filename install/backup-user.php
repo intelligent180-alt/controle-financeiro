@@ -8,6 +8,7 @@ declare(strict_types=1);
  *
  * Uso:
  *   php install/backup-user.php --source=arquivo.sqlite --cpf=CPF --output=pasta
+ *   php install/backup-user.php --source=arquivo.sqlite --cpf=CPF --user-id=2 --output=pasta
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -15,9 +16,10 @@ if (PHP_SAPI !== 'cli') {
     exit("Este arquivo deve ser executado somente pelo terminal.\n");
 }
 
-$options = getopt('', ['source:', 'cpf:', 'output::']);
+$options = getopt('', ['source:', 'cpf:', 'user-id:', 'output::']);
 $source = trim((string)($options['source'] ?? ''));
 $cpf = preg_replace('/\D+/', '', (string)($options['cpf'] ?? ''));
+$sourceUserId = isset($options['user-id']) ? (int)$options['user-id'] : null;
 $output = trim((string)($options['output'] ?? ''));
 
 if ($source === '' || $cpf === '') {
@@ -62,8 +64,13 @@ try {
         throw new RuntimeException('A tabela users nao possui a coluna cpf.');
     }
 
-    $userStatement = $pdo->prepare('SELECT id FROM users WHERE cpf = :cpf ORDER BY id');
-    $userStatement->execute([':cpf' => $cpf]);
+    if ($sourceUserId !== null && $sourceUserId > 0) {
+        $userStatement = $pdo->prepare('SELECT id FROM users WHERE id = :id AND cpf = :cpf ORDER BY id');
+        $userStatement->execute([':id' => $sourceUserId, ':cpf' => $cpf]);
+    } else {
+        $userStatement = $pdo->prepare('SELECT id FROM users WHERE cpf = :cpf ORDER BY id');
+        $userStatement->execute([':cpf' => $cpf]);
+    }
     $userIds = array_map('intval', array_column($userStatement->fetchAll(), 'id'));
     if ($userIds === []) {
         throw new RuntimeException('Nenhum usuario encontrado para o CPF informado.');
@@ -106,6 +113,7 @@ try {
         'created_at' => date('c'),
         'source_file' => basename($source),
         'cpf_filter' => $cpf,
+        'source_user_id' => $sourceUserId,
         'matched_user_ids' => $userIds,
         'database_file' => basename($output),
         'integrity' => $integrity,
