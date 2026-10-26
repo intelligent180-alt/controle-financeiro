@@ -133,7 +133,7 @@
 
         async function loadSpec() {
             const container = $('#operations');
-            try { const response = await fetch('../api/v1-openapi.json', { cache:'no-store' }); if (!response.ok) throw new Error(`Contrato OpenAPI retornou HTTP ${response.status}`); const spec = await response.json(); if (spec.servers?.[0]?.url) $('#baseUrl').value = spec.servers[0].url; container.innerHTML = ''; let count = 0; Object.entries(spec.paths || {}).forEach(([path, pathItem]) => methods.forEach(method => { if (pathItem[method]) { container.appendChild(renderOperation(path, method, pathItem[method])); count++; } })); $('#operationCount').textContent = `${count} operações · contrato OpenAPI 3.0.3`; }
+            try { const response = await fetch('./v1-openapi.json', { cache:'no-store' }); if (!response.ok) throw new Error(`Contrato OpenAPI retornou HTTP ${response.status}`); const spec = await response.json(); if (spec.servers?.[0]?.url) $('#baseUrl').value = spec.servers[0].url; container.innerHTML = ''; let count = 0; Object.entries(spec.paths || {}).forEach(([path, pathItem]) => methods.forEach(method => { if (pathItem[method]) { container.appendChild(renderOperation(path, method, pathItem[method])); count++; } })); $('#operationCount').textContent = `${count} operações · contrato OpenAPI 3.0.3`; }
             catch (error) { container.innerHTML = `<div class="error">Não foi possível carregar o contrato OpenAPI: ${escapeHtml(error.message)}</div>`; $('#operationCount').textContent = 'Falha ao carregar'; }
         }
         $('#healthButton').addEventListener('click', testHealth); loadSpec();
