@@ -4,6 +4,7 @@
 
 - APIs do frontend passaram a usar os arquivos `.php` diretamente, sem depender de `mod_rewrite`.
 - Respostas HTML de erro agora exibem uma mensagem clara em vez de falha de JSON.
+- Cache do PWA atualizado para impedir que o navegador mantenha o JavaScript antigo.
 
 ## 1.0.4-piloto - 26/10/2026
 
