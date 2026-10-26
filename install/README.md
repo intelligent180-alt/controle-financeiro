@@ -24,7 +24,7 @@ publique o comando com a senha em histórico compartilhado.
 3. Envie o projeto para o document root do domínio e mantenha o `.htaccess` da
    raiz. Ele remove a dependência do caminho local `sistema financeiro` e faz
    as rotas `api/auth` e `api/finance` funcionarem sem `.php`.
-4. Abra o domínio em HTTPS. O primeiro acesso cria automaticamente as tabelas
+4. Abra o domínio em HTTPS. Teste `https://seu-dominio/api/health.php`. O primeiro acesso cria automaticamente as tabelas
    MySQL a partir de `mysql-schema.sql` e cria o administrador caso o banco
    esteja vazio.
 

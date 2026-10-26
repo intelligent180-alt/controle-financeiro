@@ -64,7 +64,7 @@
         if (record) payload.record = record;
         if (id) payload.id = id;
         if (window.financeState?.month) payload.month = window.financeState.month;
-        return window.api('api/professional', { method: 'POST', body: JSON.stringify(payload) });
+        return window.api('api/professional.php', { method: 'POST', body: JSON.stringify(payload) });
     }
 
     async function loadSnapshot() {
@@ -72,7 +72,7 @@
         try {
             const month = window.financeState?.month || '';
             const query = month ? `&month=${encodeURIComponent(month)}` : '';
-            moduleState.snapshot = await window.api(`api/professional?action=snapshot${query}`);
+            moduleState.snapshot = await window.api(`api/professional.php?action=snapshot${query}`);
             return moduleState.snapshot;
         } finally {
             moduleState.loading = false;
@@ -440,7 +440,7 @@
     async function searchModule(form) {
         const query = new FormData(form).get('q') || '';
         try {
-            const response = await window.api(`api/professional?action=search&q=${encodeURIComponent(query)}`);
+            const response = await window.api(`api/professional.php?action=search&q=${encodeURIComponent(query)}`);
             moduleState.search = { query, results: response.results };
             renderCurrentModule();
         } catch (error) {
@@ -460,7 +460,7 @@
         };
         try {
             form.classList.add('is-loading');
-            const response = await window.api('api/professional', { method: 'POST', body: JSON.stringify(payload) });
+        const response = await window.api('api/professional.php', { method: 'POST', body: JSON.stringify(payload) });
             moduleState.credit = response.check;
             if (moduleState.snapshot) moduleState.snapshot.creditChecks = response.history || moduleState.snapshot.creditChecks || [];
             renderCurrentModule();

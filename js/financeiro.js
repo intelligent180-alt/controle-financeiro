@@ -315,7 +315,12 @@ async function api(path, options = {}) {
     const text = await response.text();
     let data = {};
     if (text.trim()) {
-        data = JSON.parse(text);
+        try {
+            data = JSON.parse(text);
+        } catch (error) {
+            const contentType = response.headers.get('content-type') || 'desconhecido';
+            throw new Error(`A API nao retornou JSON (HTTP ${response.status}, ${contentType}). Verifique se ${path} existe na hospedagem e se o PHP esta funcionando.`);
+        }
     }
     if (!response.ok || data.ok === false) {
         throw new Error(data.message || 'Falha na API.');
@@ -324,14 +329,14 @@ async function api(path, options = {}) {
 }
 
 async function financePost(action, payload = {}) {
-    return api('api/finance', {
+    return api('api/finance.php', {
         method: 'POST',
         body: JSON.stringify({ action, month: state.month, ...payload }),
     });
 }
 
 async function requireAuth() {
-    const data = await api('api/auth');
+    const data = await api('api/auth.php');
     if (!data.authenticated) {
         window.location.href = 'login';
         return false;
@@ -430,7 +435,7 @@ async function loadAdminUsers() {
     const list = $('adminUserList');
     if (!list || !state.user?.isAdmin) return;
     try {
-        const data = await api('api/auth?action=admin_users');
+        const data = await api('api/auth.php?action=admin_users');
         list.innerHTML = (data.users || []).map(user => `
             <article class="admin-user-row">
                 <span class="admin-user-avatar">${html((user.name || '?').slice(0, 1).toUpperCase())}</span>
@@ -534,7 +539,7 @@ function showForcedPasswordChangeIfNeeded() {
 }
 
 async function logout() {
-    await api('api/auth', {
+    await api('api/auth.php', {
         method: 'POST',
         body: JSON.stringify({ action: 'logout' }),
     }).catch(() => {});
@@ -544,7 +549,7 @@ async function logout() {
 async function loadDashboard() {
     state.month = $('monthFilter').value || currentMonth();
     if ($('payslipMonth')) $('payslipMonth').value = state.month;
-    const data = await api(`api/finance?month=${encodeURIComponent(state.month)}`);
+    const data = await api(`api/finance.php?month=${encodeURIComponent(state.month)}`);
     state.dashboard = data;
     if (data.user) {
         state.user = data.user;
@@ -560,7 +565,7 @@ async function loadDashboard() {
 
 async function loadYearCalendar() {
     const year = Number((state.month || currentMonth()).slice(0, 4));
-    const data = await api(`api/finance?action=calendar&year=${year}`);
+    const data = await api(`api/finance.php?action=calendar&year=${year}`);
     $('yearCalendar').innerHTML = (data.calendar || []).map(item => {
         const p20 = item.periods.find(p => p.type === 'dia20');
         const p5 = item.periods.find(p => p.type === 'quinto_util');
@@ -1905,7 +1910,7 @@ async function confirmImport() {
 }
 
 async function bankStatus() {
-    const data = await api('api/finance?action=bank_status');
+    const data = await api('api/finance.php?action=bank_status');
     $('ocrStatus').textContent = data.message || 'API bancaria preparada.';
 }
 
@@ -2089,7 +2094,7 @@ $('onboardingForm').addEventListener('submit', async event => {
     event.preventDefault();
     try {
         $('onboardingStatus').textContent = 'Configurando seu Financeiro...';
-        const data = await api('api/auth', {
+        const data = await api('api/auth.php', {
             method: 'POST',
             body: JSON.stringify({
                 action: 'save_profile',
@@ -2117,7 +2122,7 @@ $('forcePasswordForm').addEventListener('submit', async event => {
     }
     try {
         status.textContent = 'Atualizando a senha...';
-        const data = await api('api/auth', {
+        const data = await api('api/auth.php', {
             method: 'POST',
             body: JSON.stringify({
                 action: 'change_password',
@@ -2138,7 +2143,7 @@ $('adminUserForm').addEventListener('submit', async event => {
     const status = $('adminUserStatus');
     try {
         status.textContent = 'Criando acesso autorizado...';
-        await api('api/auth', {
+        await api('api/auth.php', {
             method: 'POST',
             body: JSON.stringify({
                 action: 'create_user',
@@ -2244,7 +2249,7 @@ $('profileForm').addEventListener('submit', async event => {
     event.preventDefault();
     try {
         $('profileStatus').textContent = 'Salvando perfil...';
-        const data = await api('api/auth', {
+        const data = await api('api/auth.php', {
             method: 'POST',
             body: JSON.stringify({
                 action: 'save_profile',

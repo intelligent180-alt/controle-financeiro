@@ -1,5 +1,10 @@
 # Historico de versoes
 
+## 1.0.5-piloto - 26/10/2026
+
+- APIs do frontend passaram a usar os arquivos `.php` diretamente, sem depender de `mod_rewrite`.
+- Respostas HTML de erro agora exibem uma mensagem clara em vez de falha de JSON.
+
 ## 1.0.4-piloto - 26/10/2026
 
 - Backend preparado para SQLite local ou MySQL/MariaDB em hospedagem.

@@ -82,20 +82,34 @@
 
 <script>
 async function apiAuth(payload) {
-    const response = await fetch('api/auth', {
+    const endpoint = 'api/auth.php';
+    const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     });
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+    try {
+        data = text.trim() ? JSON.parse(text) : {};
+    } catch (error) {
+        throw new Error(`A API retornou HTML em vez de JSON (HTTP ${response.status}). Verifique ${endpoint} e o PHP da hospedagem.`);
+    }
     if (!response.ok || data.ok === false) {
         throw new Error(data.message || 'Falha no acesso.');
     }
     return data;
 }
 
-fetch('api/auth')
-    .then(response => response.json())
+fetch('api/auth.php')
+    .then(async response => {
+        const text = await response.text();
+        try {
+            return text.trim() ? JSON.parse(text) : {};
+        } catch (error) {
+            return {};
+        }
+    })
     .then(data => {
         if (data.authenticated) window.location.href = 'index';
     })
