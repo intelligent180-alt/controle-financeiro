@@ -11,6 +11,9 @@ backup/user-*/
 config/*.local.php
 config/*.env
 !config/*.example.env
+install/install.token
+install/install.lock
+install/config.local.php.before-install-*
 
 # Dependencias e artefatos de build
 node_modules/

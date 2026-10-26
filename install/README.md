@@ -16,6 +16,18 @@ publique o comando com a senha em histórico compartilhado.
 
 ## Hospedagem com MySQL/MariaDB
 
+### Instalação pelo navegador
+
+Para hospedagens sem terminal, envie `web-install.php` e o arquivo privado
+`install.token` para a pasta `install/`. Abra o endereço com o token fornecido
+durante o upload, informe os dados MySQL e confirme a instalação. O instalador
+é de uso único, cria somente tabelas ausentes e grava as credenciais apenas em
+`config/config.local.php`. Depois da conclusão, o arquivo fica bloqueado pelo
+`install.lock`.
+
+Não publique o token em páginas públicas nem reutilize-o. Se a instalação
+falhar, nenhum `install.lock` é criado e a tentativa pode ser corrigida.
+
 1. Crie um banco MySQL/MariaDB e um usuário com permissão nesse banco no
    painel da hospedagem. A extensão PHP `pdo_mysql` precisa estar habilitada.
 2. Copie `config/config.example.php` para `config/config.local.php` e preencha
