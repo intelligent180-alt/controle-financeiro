@@ -6,7 +6,7 @@
     "description": "API interna autenticada para módulos de clientes, catálogo, caixa, agenda, fiscal, permissões e indicadores profissionais."
   },
   "servers": [
-    { "url": "/sistema%20financeiro" }
+    { "url": "/" }
   ],
   "components": {
     "securitySchemes": {

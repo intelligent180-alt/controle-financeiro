@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 const SF_APP_NAME = 'Sistema Financeiro';
-const SF_DB_FILE = __DIR__ . '/../data/financeiro.sql';
+const SF_DB_FILE = __DIR__ . '/../data/financeiro.sqlite';
 const SF_DEFAULT_USERNAME = 'admin';
 const SF_DEFAULT_EMAIL = 'admin@controle-financeiro.local';
 const SF_DEFAULT_CPF = '';
@@ -60,6 +60,56 @@ function sf_start_session(): void
     session_start();
 }
 
+function sf_database_config(): array
+{
+    static $config = null;
+    if (is_array($config)) {
+        return $config;
+    }
+
+    $localConfig = [];
+    $localConfigFile = __DIR__ . '/../config/config.local.php';
+    if (is_file($localConfigFile)) {
+        $loaded = require $localConfigFile;
+        if (is_array($loaded)) {
+            $localConfig = $loaded;
+        }
+    }
+
+    $fileDatabase = is_array($localConfig['database'] ?? null) ? $localConfig['database'] : [];
+    $environmentMap = [
+        'driver' => ['SF_DB_DRIVER', 'DB_DRIVER', 'DB_CONNECTION'],
+        'host' => ['SF_DB_HOST', 'DB_HOST'],
+        'port' => ['SF_DB_PORT', 'DB_PORT'],
+        'database' => ['SF_DB_NAME', 'DB_DATABASE', 'DB_NAME'],
+        'username' => ['SF_DB_USER', 'DB_USERNAME', 'DB_USER'],
+        'password' => ['SF_DB_PASSWORD', 'DB_PASSWORD', 'DB_PASS'],
+        'charset' => ['SF_DB_CHARSET', 'DB_CHARSET'],
+    ];
+    foreach ($environmentMap as $key => $environmentNames) {
+        foreach ($environmentNames as $environmentName) {
+            $value = getenv($environmentName);
+            if ($value !== false && trim((string)$value) !== '') {
+                $fileDatabase[$key] = trim((string)$value);
+                break;
+            }
+        }
+    }
+
+    $config = array_merge([
+        'driver' => 'sqlite',
+        'host' => '127.0.0.1',
+        'port' => 3306,
+        'database' => '',
+        'username' => '',
+        'password' => '',
+        'charset' => 'utf8mb4',
+    ], $fileDatabase);
+    $config['driver'] = strtolower((string)$config['driver']);
+    $config['port'] = max(1, (int)$config['port']);
+    return $config;
+}
+
 function sf_db(): PDO
 {
     static $pdo = null;
@@ -67,22 +117,51 @@ function sf_db(): PDO
         return $pdo;
     }
 
-    $dir = dirname(SF_DB_FILE);
-    if (!is_dir($dir)) {
-        mkdir($dir, 0775, true);
-    }
+    $config = sf_database_config();
+    if ($config['driver'] === 'mysql') {
+        if (!in_array('mysql', PDO::getAvailableDrivers(), true)) {
+            throw new RuntimeException('A extensao PDO MySQL nao esta habilitada no PHP da hospedagem.');
+        }
+        if ($config['database'] === '' || $config['username'] === '') {
+            throw new RuntimeException('Configure banco, usuario e senha MySQL em config/config.local.php ou nas variaveis SF_DB_*.');
+        }
 
-    $pdo = new PDO('sqlite:' . SF_DB_FILE);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    $pdo->exec('PRAGMA foreign_keys = ON');
-    sf_schema($pdo);
+        $dsn = sprintf(
+            'mysql:host=%s;port=%d;dbname=%s;charset=%s',
+            $config['host'],
+            $config['port'],
+            $config['database'],
+            $config['charset']
+        );
+        $pdo = new PDO($dsn, (string)$config['username'], (string)$config['password'], [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => true,
+        ]);
+        $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+        sf_schema_mysql($pdo);
+    } else {
+        if ($config['driver'] !== 'sqlite') {
+            throw new RuntimeException('Driver de banco invalido. Use sqlite ou mysql.');
+        }
+
+        $dir = dirname(SF_DB_FILE);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        $pdo = new PDO('sqlite:' . SF_DB_FILE);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $pdo->exec('PRAGMA foreign_keys = ON');
+        sf_schema_sqlite($pdo);
+    }
     sf_default_user($pdo);
 
     return $pdo;
 }
 
-function sf_schema(PDO $pdo): void
+function sf_schema_sqlite(PDO $pdo): void
 {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS users (
@@ -506,6 +585,28 @@ function sf_schema(PDO $pdo): void
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_professional_credit_checks_user ON professional_credit_checks (user_id, requested_at DESC)");
 }
 
+function sf_schema_mysql(PDO $pdo): void
+{
+    $schemaFile = __DIR__ . '/../install/mysql-schema.sql';
+    if (!is_file($schemaFile)) {
+        throw new RuntimeException('Arquivo install/mysql-schema.sql nao encontrado.');
+    }
+
+    $sql = file_get_contents($schemaFile);
+    if ($sql === false) {
+        throw new RuntimeException('Nao foi possivel ler o schema MySQL.');
+    }
+
+    $sql = preg_replace('/^\s*--.*$/m', '', $sql) ?: '';
+    $statements = preg_split('/;\s*(?:\r?\n|$)/', $sql) ?: [];
+    foreach ($statements as $statement) {
+        $statement = trim($statement);
+        if ($statement !== '') {
+            $pdo->exec($statement);
+        }
+    }
+}
+
 function sf_default_user(PDO $pdo): void
 {
     $count = (int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -649,7 +750,7 @@ function sf_admin_user_payload(array $user): array
 
 function sf_admin_users(PDO $pdo): array
 {
-    $stmt = $pdo->query('SELECT id, name, username, email, profile_type, profile_completed, is_admin, created_at FROM users ORDER BY is_admin DESC, name COLLATE NOCASE ASC, id DESC');
+    $stmt = $pdo->query('SELECT id, name, username, email, profile_type, profile_completed, is_admin, created_at FROM users ORDER BY is_admin DESC, name ASC, id DESC');
     return array_map('sf_admin_user_payload', $stmt->fetchAll());
 }
 

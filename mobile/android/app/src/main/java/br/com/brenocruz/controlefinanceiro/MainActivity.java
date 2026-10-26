@@ -1,7 +1,6 @@
 package br.com.brenocruz.controlefinanceiro;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
@@ -33,11 +32,26 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
         String savedUrl = preferences.getString(SERVER_URL, "");
+        String defaultUrl = BuildConfig.DEFAULT_SERVER_URL.trim();
+        if (savedUrl.isEmpty() && isHttpUrl(defaultUrl)) {
+            preferences.edit().putString(SERVER_URL, normalizeUrl(defaultUrl)).apply();
+            savedUrl = normalizeUrl(defaultUrl);
+        }
         if (savedUrl.isEmpty()) {
             showConfiguration();
         } else {
             showWeb(savedUrl);
         }
+    }
+
+    private boolean isHttpUrl(String value) {
+        Uri uri = Uri.parse(value);
+        return "http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme());
+    }
+
+    private String normalizeUrl(String value) {
+        String normalized = value.trim();
+        return normalized.endsWith("/") ? normalized : normalized + "/";
     }
 
     private int dp(float value) {
@@ -95,7 +109,11 @@ public class MainActivity extends Activity {
 
         EditText urlInput = new EditText(this);
         urlInput.setSingleLine(true);
-        urlInput.setText(preferences.getString(SERVER_URL, ""));
+        String configuredUrl = preferences.getString(SERVER_URL, "");
+        if (configuredUrl.isEmpty() && isHttpUrl(BuildConfig.DEFAULT_SERVER_URL)) {
+            configuredUrl = normalizeUrl(BuildConfig.DEFAULT_SERVER_URL);
+        }
+        urlInput.setText(configuredUrl);
         urlInput.setHint("https://seu-dominio/sistema-financeiro/");
         urlInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
         layout.addView(urlInput, new LinearLayout.LayoutParams(-1, dp(58)));
@@ -110,12 +128,11 @@ public class MainActivity extends Activity {
         open.setBackgroundColor(GREEN);
         open.setOnClickListener(view -> {
             String value = urlInput.getText().toString().trim();
-            Uri uri = Uri.parse(value);
-            if (!"http".equalsIgnoreCase(uri.getScheme()) && !"https".equalsIgnoreCase(uri.getScheme())) {
+            if (!isHttpUrl(value)) {
                 Toast.makeText(this, "Informe uma URL iniciando com http:// ou https://", Toast.LENGTH_LONG).show();
                 return;
             }
-            if (!value.endsWith("/")) value += "/";
+            value = normalizeUrl(value);
             preferences.edit().putString(SERVER_URL, value).apply();
             showWeb(value);
         });

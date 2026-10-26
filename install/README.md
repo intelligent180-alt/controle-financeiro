@@ -13,3 +13,21 @@ php install/patch-20260911.php --reset-all --confirm=RESET-TODOS-DADOS --admin-p
 
 A senha inicial é temporária e deve ser trocada no primeiro acesso. Nunca
 publique o comando com a senha em histórico compartilhado.
+
+## Hospedagem com MySQL/MariaDB
+
+1. Crie um banco MySQL/MariaDB e um usuário com permissão nesse banco no
+   painel da hospedagem. A extensão PHP `pdo_mysql` precisa estar habilitada.
+2. Copie `config/config.example.php` para `config/config.local.php` e preencha
+   host, porta, banco, usuário e senha. Esse arquivo fica protegido e não deve
+   ser publicado no Git.
+3. Envie o projeto para o document root do domínio e mantenha o `.htaccess` da
+   raiz. Ele remove a dependência do caminho local `sistema financeiro` e faz
+   as rotas `api/auth` e `api/finance` funcionarem sem `.php`.
+4. Abra o domínio em HTTPS. O primeiro acesso cria automaticamente as tabelas
+   MySQL a partir de `mysql-schema.sql` e cria o administrador caso o banco
+   esteja vazio.
+
+O arquivo `data/financeiro.sqlite` é apenas o banco local de desenvolvimento.
+Em produção, o driver deve ser `mysql`; não envie dumps SQL com dados pessoais
+para uma pasta pública.

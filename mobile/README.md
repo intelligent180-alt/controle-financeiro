@@ -17,6 +17,16 @@ Antes da compilacao, configure uma URL como:
 https://seu-dominio.example/sistema-financeiro/
 ```
 
+Para gerar um APK que ja abra o dominio na primeira execucao, use a propriedade
+`appServerUrl` no Gradle:
+
+```text
+gradlew.bat assembleDebug -PappServerUrl=https://seu-dominio.example/
+```
+
+Sem essa propriedade, o aplicativo pede a URL na primeira abertura e a salva no
+celular. Assim o mesmo APK pode ser usado em mais de uma hospedagem.
+
 O backend deve continuar protegido por HTTPS, sessao e autenticacao. Nunca
 coloque credenciais de APIs no aplicativo movel.
 

@@ -6,11 +6,19 @@ android {
     namespace 'br.com.brenocruz.controlefinanceiro'
     compileSdk 35
 
+    def configuredServerUrl = (project.findProperty('appServerUrl') ?: '').toString()
+    def escapedServerUrl = configuredServerUrl.replace('\\', '\\\\').replace('"', '\\"')
+
     defaultConfig {
         applicationId 'br.com.brenocruz.controlefinanceiro'
         minSdk 23
         targetSdk 35
-        versionCode 103
-        versionName '1.0.3'
+        versionCode 104
+        versionName '1.0.4'
+        buildConfigField 'String', 'DEFAULT_SERVER_URL', '"' + escapedServerUrl + '"'
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }

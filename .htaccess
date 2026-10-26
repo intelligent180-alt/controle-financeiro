@@ -4,14 +4,6 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-RewriteCond %{REQUEST_METHOD} =GET
-RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[?\s] [NC]
-RewriteRule ^(.+)\.html$ /sistema%20financeiro/$1 [R=302,L,NE]
-
-RewriteCond %{REQUEST_METHOD} =GET
-RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[?\s] [NC]
-RewriteRule ^(.+)\.php$ /sistema%20financeiro/$1 [R=302,L,NE]
-
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.+?)/?$ $1.php [L,QSA]

@@ -1,5 +1,13 @@
 # Historico de versoes
 
+## 1.0.4-piloto - 26/10/2026
+
+- Backend preparado para SQLite local ou MySQL/MariaDB em hospedagem.
+- Configuração de banco separada em `config/config.local.php` ou variáveis de ambiente.
+- Schema MySQL automático e endpoint de diagnóstico em `api/health`.
+- Removido redirecionamento fixo para a pasta local do WAMP.
+- APK preparado para abrir um domínio configurado no build ou informado na primeira abertura.
+
 ## 1.0.3-piloto - 11/09/2026
 
 - Cadastro de novos usuários protegido por autorização administrativa.

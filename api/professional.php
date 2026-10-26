@@ -9,7 +9,7 @@ function pm_entity_config(string $entity): ?array
     $configs = [
         'clients' => [
             'table' => 'professional_clients',
-            'order' => 'name COLLATE NOCASE ASC, id DESC',
+            'order' => 'name ASC, id DESC',
             'fields' => [
                 'name' => ['column' => 'name', 'type' => 'text', 'required' => true],
                 'document' => ['column' => 'document', 'type' => 'text'],
@@ -21,7 +21,7 @@ function pm_entity_config(string $entity): ?array
         ],
         'catalog' => [
             'table' => 'professional_catalog',
-            'order' => 'item_type ASC, name COLLATE NOCASE ASC, id DESC',
+            'order' => 'item_type ASC, name ASC, id DESC',
             'fields' => [
                 'itemType' => ['column' => 'item_type', 'type' => 'catalog_type'],
                 'name' => ['column' => 'name', 'type' => 'text', 'required' => true],
@@ -34,7 +34,7 @@ function pm_entity_config(string $entity): ?array
         ],
         'cash' => [
             'table' => 'professional_cash_accounts',
-            'order' => 'name COLLATE NOCASE ASC, id DESC',
+            'order' => 'name ASC, id DESC',
             'fields' => [
                 'name' => ['column' => 'name', 'type' => 'text', 'required' => true],
                 'accountType' => ['column' => 'account_type', 'type' => 'account_type'],
@@ -44,7 +44,7 @@ function pm_entity_config(string $entity): ?array
         ],
         'categories' => [
             'table' => 'professional_categories',
-            'order' => 'kind ASC, name COLLATE NOCASE ASC, id DESC',
+            'order' => 'kind ASC, name ASC, id DESC',
             'fields' => [
                 'name' => ['column' => 'name', 'type' => 'text', 'required' => true],
                 'kind' => ['column' => 'kind', 'type' => 'category_kind'],
@@ -53,7 +53,7 @@ function pm_entity_config(string $entity): ?array
         ],
         'payment_methods' => [
             'table' => 'professional_payment_methods',
-            'order' => 'name COLLATE NOCASE ASC, id DESC',
+            'order' => 'name ASC, id DESC',
             'fields' => [
                 'name' => ['column' => 'name', 'type' => 'text', 'required' => true],
                 'methodType' => ['column' => 'method_type', 'type' => 'method_type'],
@@ -644,7 +644,7 @@ function pm_snapshot(PDO $pdo, array $user, ?string $month = null): array
 {
     $userId = (int)$user['id'];
     $selectedMonth = sf_month($month);
-    $cardStmt = $pdo->prepare('SELECT id, nickname, institution, brand, last4, limit_total FROM cards WHERE user_id = :user_id AND active = 1 ORDER BY nickname COLLATE NOCASE');
+    $cardStmt = $pdo->prepare('SELECT id, nickname, institution, brand, last4, limit_total FROM cards WHERE user_id = :user_id AND active = 1 ORDER BY nickname ASC');
     $cardStmt->execute([':user_id' => $userId]);
     $cards = array_map(static fn(array $row): array => [
         'id' => (int)$row['id'],
@@ -778,10 +778,10 @@ function pm_search(PDO $pdo, int $userId, string $query): array
     }
     $like = '%' . $query . '%';
     $result = ['clients' => [], 'catalog' => [], 'transactions' => []];
-    $stmt = $pdo->prepare('SELECT * FROM professional_clients WHERE user_id = :user_id AND (name LIKE :query OR document LIKE :query OR email LIKE :query) ORDER BY name COLLATE NOCASE LIMIT 30');
+    $stmt = $pdo->prepare('SELECT * FROM professional_clients WHERE user_id = :user_id AND (name LIKE :query OR document LIKE :query OR email LIKE :query) ORDER BY name ASC LIMIT 30');
     $stmt->execute([':user_id' => $userId, ':query' => $like]);
     $result['clients'] = array_map(fn(array $row): array => pm_entity_payload('clients', $row), $stmt->fetchAll());
-    $stmt = $pdo->prepare('SELECT * FROM professional_catalog WHERE user_id = :user_id AND (name LIKE :query OR code LIKE :query) ORDER BY name COLLATE NOCASE LIMIT 30');
+    $stmt = $pdo->prepare('SELECT * FROM professional_catalog WHERE user_id = :user_id AND (name LIKE :query OR code LIKE :query) ORDER BY name ASC LIMIT 30');
     $stmt->execute([':user_id' => $userId, ':query' => $like]);
     $result['catalog'] = array_map(fn(array $row): array => pm_entity_payload('catalog', $row), $stmt->fetchAll());
     $stmt = $pdo->prepare('SELECT id, description, category, amount, movement_date, payment_method FROM transactions WHERE user_id = :user_id AND (description LIKE :query OR category LIKE :query) ORDER BY movement_date DESC, id DESC LIMIT 30');
