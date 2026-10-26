@@ -15,8 +15,9 @@ if (PHP_SAPI !== 'cli') {
 }
 
 require_once __DIR__ . '/../api/bootstrap.php';
+require_once __DIR__ . '/legacy-migration.php';
 
-$options = getopt('', ['prepare', 'check', 'base-url:', 'help']);
+$options = getopt('', ['prepare', 'check', 'migrate', 'source:', 'cpf:', 'source-user-id:', 'profile::', 'confirm:', 'base-url:', 'help']);
 
 if (isset($options['help']) || (!$options && PHP_SAPI === 'cli')) {
     fwrite(STDOUT, <<<TEXT
@@ -25,9 +26,13 @@ Preparador de hospedagem do Controle Financeiro
 Uso seguro:
   php install/hosting-install.php --check
   php install/hosting-install.php --prepare --base-url=https://seu-dominio.example/
+  php install/hosting-install.php --migrate --source=data/financeiro.sqlite --cpf=CPF
+  php install/hosting-install.php --migrate --source=data/financeiro.sqlite --cpf=CPF --profile=clt --confirm=MIGRAR-DADOS-SEM-APAGAR
 
 --check    valida PHP, extensoes e arquivos sem conectar ao banco.
 --prepare  conecta ao MySQL e cria somente tabelas ausentes.
+--migrate  mostra a previa do SQLite legado; com --confirm importa de forma aditiva.
+--source-user-id seleciona o ID da conta legada quando o CPF aparece mais de uma vez.
 --base-url informa o dominio que sera usado pelo APK; nao altera o banco.
 
 Nenhuma opcao apaga dados ou altera usuarios existentes.
@@ -85,6 +90,45 @@ function hosting_required_files(): array
 $baseUrl = hosting_base_url($options['base-url'] ?? null);
 $root = dirname(__DIR__);
 $config = sf_database_config();
+
+if (isset($options['migrate'])) {
+    try {
+        $source = (string)($options['source'] ?? ($root . '/data/financeiro.sqlite'));
+        $cpf = (string)($options['cpf'] ?? '');
+        $sourceUserId = isset($options['source-user-id']) ? (int)$options['source-user-id'] : null;
+        $profile = (string)($options['profile'] ?? 'keep');
+        $confirmation = (string)($options['confirm'] ?? '');
+        $execute = $confirmation !== '';
+        $migration = sf_legacy_migration_run($source, $cpf, $profile, $execute, $confirmation, $sourceUserId);
+        hosting_line('Migracao', $migration['message']);
+        hosting_line('Usuarios encontrados', (string)$migration['users_found']);
+        if (!empty($migration['source_user_ids'])) {
+            hosting_line('IDs na origem', implode(', ', $migration['source_user_ids']));
+        }
+        hosting_line('Perfil solicitado', $profile);
+        if (!empty($migration['warning'])) {
+            hosting_line('Atencao', $migration['warning']);
+        }
+        foreach ($migration['rows_by_table'] as $table => $count) {
+            hosting_line('  ' . $table, (string)$count . ' registro(s)');
+        }
+        if (!$execute && count($migration['source_user_ids']) > 1 && $sourceUserId === null) {
+            fwrite(STDOUT, PHP_EOL . "Escolha um ID da origem e rode a previa novamente:" . PHP_EOL);
+            fwrite(STDOUT, "  php install/hosting-install.php --migrate --source=" . $source
+                . " --cpf=" . $cpf . " --source-user-id=ID --profile=" . $profile . PHP_EOL);
+        } elseif (!$execute) {
+            fwrite(STDOUT, PHP_EOL . "Para executar depois de revisar a previa:" . PHP_EOL);
+            fwrite(STDOUT, "  php install/hosting-install.php --migrate --source=" . $source
+                . " --cpf=" . $cpf
+                . ($sourceUserId !== null ? " --source-user-id=" . $sourceUserId : '')
+                . " --profile=" . $profile
+                . " --confirm=MIGRAR-DADOS-SEM-APAGAR" . PHP_EOL);
+        }
+        exit(0);
+    } catch (Throwable $error) {
+        hosting_fail('Falha na migracao: ' . $error->getMessage(), 1);
+    }
+}
 
 hosting_line('PHP', PHP_VERSION);
 hosting_line('Driver configurado', (string)$config['driver']);

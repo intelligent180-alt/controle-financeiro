@@ -57,6 +57,46 @@ banco. Após uma restauração, recrie esse arquivo a partir de
 `config/config.example.php`. Não execute novamente o
 `install/patch-20260911.php`, pois ele é um patch antigo de reset.
 
+### Migrar o usuario legado para o MySQL
+
+Durante a instalação, o sistema pode localizar o SQLite antigo e mostrar uma
+prévia do que será migrado para um CPF específico. A prévia não conecta nem
+altera o MySQL:
+
+```text
+php install/hosting-install.php --migrate \
+  --source=data/financeiro.sqlite \
+  --cpf=SEU_CPF \
+  --profile=clt
+```
+
+Depois de conferir as quantidades exibidas, execute com a confirmação explícita:
+
+```text
+php install/hosting-install.php --migrate \
+  --source=data/financeiro.sqlite \
+  --cpf=SEU_CPF \
+  --profile=clt \
+  --confirm=MIGRAR-DADOS-SEM-APAGAR
+```
+
+Essa etapa cria as tabelas ausentes, preserva o usuário e seus registros
+relacionados e não apaga registros já existentes no MySQL. A opção
+`--profile=clt` altera somente o perfil e as respostas de perfil do usuário
+identificado; não remove movimentações, cartões ou recebimentos.
+
+Se a prévia listar mais de um ID para o mesmo CPF, não execute ainda. Isso
+indica contas antigas duplicadas na origem. Escolha o ID correto e repita a
+prévia, por exemplo:
+
+```text
+php install/hosting-install.php --migrate \
+  --source=backup/user-15416282681-historico/financeiro.sqlite \
+  --cpf=SEU_CPF --source-user-id=2 --profile=clt
+```
+
+Somente depois confira os registros desse ID e acrescente a confirmação.
+
 ### Instalador não destrutivo
 
 Depois de copiar os arquivos e configurar o MySQL, valide a hospedagem:
