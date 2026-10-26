@@ -53,7 +53,8 @@ servidor e todas as regras são aplicadas no backend.
 
 ## API REST
 
-Documentação visual: <https://financeiro.byethost32.com/docs/api.html><br>
+Portfólio online: <https://intelligent180-alt.github.io/controle-financeiro/portfolio.html><br>
+Documentação visual: <https://intelligent180-alt.github.io/controle-financeiro/api.html><br>
 Contrato OpenAPI: `api/v1-openapi.json`<br>
 Documentação completa: `docs/API-REST.md`
 
