@@ -6,6 +6,8 @@ data/*.sql
 mobile/financeiro.sql
 backup/pre-reset-*/
 backup/system-*/
+backup/ftp-*/
+backup/user-*/
 config/*.local.php
 config/*.env
 !config/*.example.env
