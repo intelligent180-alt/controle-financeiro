@@ -9,6 +9,9 @@ config/*.env
 
 # Dependencias e artefatos de build
 node_modules/
+**/build/
+**/.gradle/
+**/local.properties
 mobile/build/
 mobile/.gradle/
 mobile/.idea/

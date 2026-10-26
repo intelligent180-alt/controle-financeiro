@@ -7,11 +7,9 @@ alcançar o endereço do WAMP pela rede.
 
 ## APK nativo
 
-O APK ainda nao foi compilado neste ambiente porque Android SDK, Java/Gradle e
-um endereco HTTPS acessivel pelo celular nao estao instalados/configurados.
-Para gerar o APK com seguranca, a proxima etapa e empacotar esta aplicacao em
-um WebView/Capacitor apontando para a URL publicada do sistema. Nao use
-`localhost` no celular: ele aponta para o proprio aparelho.
+O projeto Android fica em `mobile/android`. Ele abre o mesmo sistema web em um
+WebView e permite configurar o endereco do servidor na primeira execucao. Nao
+use `localhost` no celular: ele aponta para o proprio aparelho.
 
 Antes da compilacao, configure uma URL como:
 
@@ -21,3 +19,7 @@ https://seu-dominio.example/sistema-financeiro/
 
 O backend deve continuar protegido por HTTPS, sessao e autenticacao. Nunca
 coloque credenciais de APIs no aplicativo movel.
+
+Para compilar com Android Studio, abra a pasta `mobile/android` e use **Build >
+Build APK(s)**. Pelo terminal, use `gradlew.bat assembleDebug` depois de ter o
+SDK Android 35 e o Gradle configurados.

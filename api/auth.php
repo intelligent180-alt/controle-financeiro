@@ -10,6 +10,11 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $user = sf_current_user($pdo);
+        $action = sf_text($_GET['action'] ?? '', 40);
+        if ($action === 'admin_users') {
+            sf_require_admin($pdo);
+            sf_json(['ok' => true, 'users' => sf_admin_users($pdo)]);
+        }
         sf_json([
             'ok' => true,
             'authenticated' => (bool)$user,
@@ -56,36 +61,55 @@ try {
         sf_json(['ok' => true, 'message' => 'Senha atualizada com sucesso.', 'user' => sf_user_payload(sf_current_user($pdo))]);
     }
 
-    if ($action === 'register') {
+    if ($action === 'create_user') {
+        sf_require_admin($pdo);
         $name = sf_text($input['name'] ?? '', 160);
         $email = strtolower(sf_text($input['email'] ?? '', 190));
+        $username = strtolower(sf_text($input['username'] ?? '', 50));
         $cpf = preg_replace('/\D+/', '', (string)($input['cpf'] ?? ''));
         $password = (string)($input['password'] ?? '');
 
-        if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 3) {
-            sf_json(['ok' => false, 'message' => 'Informe nome, e-mail valido e senha com pelo menos 3 caracteres.'], 422);
+        if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            sf_json(['ok' => false, 'message' => 'Informe nome e e-mail validos.'], 422);
+        }
+        if (!preg_match('/^[a-z0-9][a-z0-9._-]{2,49}$/', $username)) {
+            sf_json(['ok' => false, 'message' => 'O usuario deve ter de 3 a 50 caracteres, usando letras, numeros, ponto, hifen ou sublinhado.'], 422);
+        }
+        if (strlen($password) < 8) {
+            sf_json(['ok' => false, 'message' => 'A senha inicial deve ter pelo menos 8 caracteres.'], 422);
+        }
+        if ($cpf !== '' && strlen($cpf) !== 11) {
+            sf_json(['ok' => false, 'message' => 'O CPF informado deve ter 11 digitos.'], 422);
+        }
+
+        $duplicate = $pdo->prepare('SELECT id FROM users WHERE lower(email) = :email OR lower(username) = :username OR (:cpf_check <> \'\' AND cpf = :cpf_value) LIMIT 1');
+        $duplicate->execute([':email' => $email, ':username' => $username, ':cpf_check' => $cpf, ':cpf_value' => $cpf]);
+        if ($duplicate->fetch()) {
+            sf_json(['ok' => false, 'message' => 'Ja existe um usuario com este e-mail, nome de usuario ou CPF.'], 409);
         }
 
         $now = sf_now();
-        $stmt = $pdo->prepare("
-            INSERT INTO users (name, email, cpf, profile_type, profile_completed, profile_answers_json, password_hash, created_at, updated_at)
-            VALUES (:name, :email, :cpf, 'clt', 0, '{}', :password_hash, :created_at, :updated_at)
-        ");
+        $stmt = $pdo->prepare('
+            INSERT INTO users (name, email, cpf, username, profile_type, profile_completed, profile_answers_json, password_hash, is_admin, must_change_password, created_at, updated_at)
+            VALUES (:name, :email, :cpf, :username, \'clt\', 0, \'{}\', :password_hash, 0, 1, :created_at, :updated_at)
+        ');
         $stmt->execute([
             ':name' => $name,
             ':email' => $email,
             ':cpf' => $cpf,
+            ':username' => $username,
             ':password_hash' => password_hash($password, PASSWORD_DEFAULT),
             ':created_at' => $now,
             ':updated_at' => $now,
         ]);
+        $userId = (int)$pdo->lastInsertId();
+        $created = $pdo->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
+        $created->execute([':id' => $userId]);
+        sf_json(['ok' => true, 'message' => 'Usuario criado e autorizado pelo administrador.', 'user' => sf_admin_user_payload($created->fetch() ?: [])]);
+    }
 
-        $_SESSION['sf_user_id'] = (int)$pdo->lastInsertId();
-        sf_json([
-            'ok' => true,
-            'message' => 'Conta criada com sucesso.',
-            'user' => sf_user_payload(sf_current_user($pdo)),
-        ]);
+    if ($action === 'register') {
+        sf_json(['ok' => false, 'message' => 'Novos acessos só podem ser criados e autorizados pelo administrador.'], 403);
     }
 
     if ($action === 'save_profile') {

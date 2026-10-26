@@ -5850,3 +5850,122 @@ body {
         line-height: 1.45;
     }
 }
+
+.admin-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.admin-section-heading h2 {
+    margin-bottom: 0;
+}
+
+.admin-badge {
+    padding: 0.36rem 0.6rem;
+    border: 1px solid #a6d9c2;
+    border-radius: 999px;
+    color: #13754e;
+    background: #eaf8f0;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.admin-user-management {
+    grid-column: 1 / -1;
+}
+
+.admin-user-management form {
+    margin-top: 1rem;
+}
+
+.admin-user-management .field-help {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6e8582;
+    font-size: 0.72rem;
+}
+
+.admin-user-list {
+    display: grid;
+    gap: 0.55rem;
+    margin-top: 1.1rem;
+}
+
+.admin-user-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid #dcebea;
+    border-radius: 12px;
+    background: #f8fcfb;
+}
+
+.admin-user-avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    color: #ffffff;
+    background: linear-gradient(145deg, #17a982, #0c7c67);
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.admin-user-row strong,
+.admin-user-row small {
+    display: block;
+}
+
+.admin-user-row strong {
+    color: #173f46;
+    font-size: 0.86rem;
+}
+
+.admin-user-row small {
+    overflow: hidden;
+    margin-top: 0.15rem;
+    color: #6b8184;
+    font-size: 0.73rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-user-state {
+    padding: 0.32rem 0.5rem;
+    border-radius: 999px;
+    color: #7c6861;
+    background: #fff4ed;
+    font-size: 0.68rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.admin-user-state.is-ready {
+    color: #177955;
+    background: #eaf8f0;
+}
+
+.auth-admin-note {
+    margin: 0.9rem 0 0;
+    color: #65817f;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+@media (max-width: 560px) {
+    .admin-user-row {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .admin-user-state {
+        grid-column: 2;
+        justify-self: start;
+    }
+}

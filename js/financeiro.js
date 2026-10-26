@@ -404,6 +404,8 @@ function applyProfileConfiguration() {
         $('importPeriodHelp').textContent = 'Para Pix e débito, confirme em cada movimento a data do pagamento e se o saldo usado veio do Dia 20 ou do 5º dia útil. Compras no cartão serão vinculadas automaticamente pelo final do cartão cadastrado.';
     }
     $('profileDashboard').hidden = !config.showProfessionalDashboard;
+    $('adminUserManagement').hidden = !user.isAdmin;
+    if (user.isAdmin) loadAdminUsers();
     $('professionalTab').hidden = !config.showProfessionalDashboard;
     $('profileContext').hidden = true;
     if (config.showProfessionalDashboard) {
@@ -421,6 +423,23 @@ function applyProfileConfiguration() {
     if (config.showProfessionalDashboard) {
         $('professionalPanelTitle').textContent = config.dashboardTitle.replace(/^(Dashboard|Financeiro)\s+/, '') + ' | Patrimonio, impostos e operacao';
         $('professionalPanelDescription').textContent = config.dashboardDescription + ' Cadastre seus bens e acompanhe as obrigacoes em um unico lugar.';
+    }
+}
+
+async function loadAdminUsers() {
+    const list = $('adminUserList');
+    if (!list || !state.user?.isAdmin) return;
+    try {
+        const data = await api('api/auth?action=admin_users');
+        list.innerHTML = (data.users || []).map(user => `
+            <article class="admin-user-row">
+                <span class="admin-user-avatar">${html((user.name || '?').slice(0, 1).toUpperCase())}</span>
+                <div><strong>${html(user.name)}</strong><small>@${html(user.username || 'sem usuario')} · ${html(user.email)}</small></div>
+                <span class="admin-user-state ${user.profileCompleted ? 'is-ready' : ''}">${user.isAdmin ? 'Administrador' : (user.profileCompleted ? 'Perfil pronto' : 'Aguardando perfil')}</span>
+            </article>
+        `).join('') || '<p class="muted">Nenhum usuário cadastrado.</p>';
+    } catch (error) {
+        list.innerHTML = `<p class="muted">${html(error.message || 'Não foi possível carregar os usuários.')}</p>`;
     }
 }
 
@@ -2111,6 +2130,30 @@ $('forcePasswordForm').addEventListener('submit', async event => {
         $('forcePasswordForm').reset();
     } catch (error) {
         status.textContent = error.message || 'Nao foi possivel atualizar a senha.';
+    }
+});
+
+$('adminUserForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const status = $('adminUserStatus');
+    try {
+        status.textContent = 'Criando acesso autorizado...';
+        await api('api/auth', {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'create_user',
+                name: $('adminUserName').value.trim(),
+                username: $('adminUserUsername').value.trim(),
+                email: $('adminUserEmail').value.trim(),
+                cpf: $('adminUserCpf').value.trim(),
+                password: $('adminUserPassword').value,
+            }),
+        });
+        $('adminUserForm').reset();
+        status.textContent = 'Usuário criado e autorizado. Ele deverá concluir o perfil no primeiro acesso.';
+        await loadAdminUsers();
+    } catch (error) {
+        status.textContent = error.message || 'Não foi possível criar o usuário.';
     }
 });
 

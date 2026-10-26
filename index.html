@@ -550,6 +550,22 @@
                         <p class="muted">Esta configuracao orienta o painel. Seus lancamentos, cartoes e metas continuam separados por conta.</p>
                         <div class="profile-module-list" id="profileModules"></div>
                     </article>
+                    <article class="soft-card pad admin-user-management" id="adminUserManagement" hidden>
+                        <div class="admin-section-heading"><div><span class="eyebrow">Controle de acesso</span><h2>Autorizar novos usuários</h2></div><span class="admin-badge">ADMIN</span></div>
+                        <p class="muted">Somente esta área administrativa pode criar acessos. O usuário criado definirá seu perfil financeiro no primeiro login.</p>
+                        <form id="adminUserForm">
+                            <div class="form-grid">
+                                <div class="field"><label for="adminUserName">Nome completo*</label><input id="adminUserName" class="plain-input" required></div>
+                                <div class="field"><label for="adminUserUsername">Usuário*</label><input id="adminUserUsername" class="plain-input" required minlength="3" maxlength="50" pattern="[A-Za-z0-9._-]+" autocomplete="off"></div>
+                                <div class="field"><label for="adminUserEmail">E-mail*</label><input id="adminUserEmail" class="plain-input" type="email" required autocomplete="email"></div>
+                                <div class="field"><label for="adminUserCpf">CPF (opcional)</label><input id="adminUserCpf" class="plain-input" inputmode="numeric" maxlength="14"></div>
+                                <div class="field"><label for="adminUserPassword">Senha inicial*</label><input id="adminUserPassword" class="plain-input" type="password" minlength="8" required autocomplete="new-password"><small class="field-help">Mínimo de 8 caracteres.</small></div>
+                            </div>
+                            <p class="muted" id="adminUserStatus" role="status"></p>
+                            <div class="form-actions"><button class="primary-btn" type="submit">Criar e autorizar usuário</button><button class="secondary-btn" type="reset">Limpar</button></div>
+                        </form>
+                        <div class="admin-user-list" id="adminUserList"></div>
+                    </article>
                 </div>
             </section>
         </section>

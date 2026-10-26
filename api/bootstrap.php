@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 const SF_APP_NAME = 'Sistema Financeiro';
-const SF_DB_FILE = __DIR__ . '/../data/financeiro.sqlite';
+const SF_DB_FILE = __DIR__ . '/../data/financeiro.sql';
 const SF_DEFAULT_USERNAME = 'admin';
 const SF_DEFAULT_EMAIL = 'admin@controle-financeiro.local';
 const SF_DEFAULT_CPF = '';
@@ -622,6 +622,35 @@ function sf_require_user(PDO $pdo): array
         sf_json(['ok' => false, 'message' => 'Sessao expirada. Faca login novamente.'], 401);
     }
     return $user;
+}
+
+function sf_require_admin(PDO $pdo): array
+{
+    $user = sf_require_user($pdo);
+    if (empty($user['is_admin'])) {
+        sf_json(['ok' => false, 'message' => 'Somente o administrador pode autorizar novos usuarios.'], 403);
+    }
+    return $user;
+}
+
+function sf_admin_user_payload(array $user): array
+{
+    return [
+        'id' => (int)$user['id'],
+        'name' => (string)$user['name'],
+        'username' => (string)($user['username'] ?? ''),
+        'email' => (string)$user['email'],
+        'profileType' => sf_profile_type($user['profile_type'] ?? 'clt'),
+        'profileCompleted' => (bool)($user['profile_completed'] ?? false),
+        'isAdmin' => (bool)($user['is_admin'] ?? false),
+        'createdAt' => (string)($user['created_at'] ?? ''),
+    ];
+}
+
+function sf_admin_users(PDO $pdo): array
+{
+    $stmt = $pdo->query('SELECT id, name, username, email, profile_type, profile_completed, is_admin, created_at FROM users ORDER BY is_admin DESC, name COLLATE NOCASE ASC, id DESC');
+    return array_map('sf_admin_user_payload', $stmt->fetchAll());
 }
 
 function sf_text($value, int $limit = 255): string

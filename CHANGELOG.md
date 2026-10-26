@@ -1,5 +1,12 @@
 # Historico de versoes
 
+## 1.0.3-piloto - 11/09/2026
+
+- Cadastro de novos usuários protegido por autorização administrativa.
+- Usuário público não pode mais criar contas diretamente.
+- Tela administrativa de gestão de acessos adicionada.
+- APK híbrido configurável preparado para o mesmo backend web.
+
 ## 1.0.2-piloto - 11/09/2026
 
 - Patch de instalacao criado para inicializar o sistema com administrador.
